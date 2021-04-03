@@ -1,0 +1,18 @@
+.cell {
+    background: black;
+    width:4rem;
+    height: 4rem;
+}
+
+.light_cell {
+    background: #a5947d;
+}
+
+.dark_cell {
+    background: #58372d;
+}
+
+.logo {
+    width: 4rem;
+    height: 4rem;
+}

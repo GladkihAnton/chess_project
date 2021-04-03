@@ -1,0 +1,7 @@
+.board {
+    display: grid;
+    /*grid-template-columns: 8fr 8fr 8fr 8fr 8fr 8fr 8fr 8fr;*/
+    grid-template-columns: auto auto auto auto auto auto auto auto;
+    grid-gap: 0;
+    width: 32rem;
+}
