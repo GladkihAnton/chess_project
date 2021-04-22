@@ -3,42 +3,30 @@ import Cell from "../cell/cell";
 
 import style from './board.module.css';
 import _ from "underscore";
-import test from '../../images/chess_figures/dark_bishop.png';
+import {connect} from "react-redux";
 
 class Board extends Component {
-    COUNT_OF_CELLS = 64;
-    constructor(props) {
-        super(props);
-        console.log(props);
-        this.board = props.board;
-    }
 
     prepareBoard() {
         let boardItems = [];
-
-        _.times(this.COUNT_OF_CELLS, (i) => {
-            boardItems.push(<Cell key={i} cellNumber={i} figure={this.getFigure(i)} dispatch={this.props.dispatch}/>);
+        _.times(8, (y) => {
+            _.times(8 , (x) => {
+                const chosenPiece = this.props.chosenPiece?.posX === x &&
+                    this.props.chosenPiece?.posY === y ? this.props.chosenPiece : null;
+                const canMove = this.props.moves[y][x] !== '';
+                boardItems.push(<Cell key={8*y + x + this.props.board[y][x]} posX={x} posY={y} chosenPiece={chosenPiece} canMove={canMove} piece={this.getFigure(x, y)}/>);
+            });
         });
 
         return boardItems;
     }
 
-    // getMoves() {
-    //     this
-    // }
-
-    getFigure(number) {
-        return this.board[~~(number / 8)][number % 8];
-    }
-
-    fillBoard() {
-        console.log(this.state);
+    getFigure(posX, posY) {
+        return this.props.board[posY][posX];
     }
 
     render() {
-        this.fillBoard();
         return (
-
             <div className={style.board}>
                 {this.prepareBoard()}
             </div>
@@ -46,4 +34,14 @@ class Board extends Component {
     }
 }
 
-export default Board
+function  mapStateToProps(state, ownProps) {
+    return {
+        board: state.game.board,
+        moves: state.game.moves,
+        chosenPiece: state.game.chosenPiece
+    };
+}
+
+export default connect(
+    mapStateToProps, null
+)(Board)

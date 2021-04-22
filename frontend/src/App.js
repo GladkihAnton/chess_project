@@ -5,27 +5,20 @@ import style from './App.module.css';
 
 import {BrowserRouter} from "react-router-dom";
 import {Route} from "react-router";
+import {Provider} from "react-redux/lib/alternate-renderers";
 import store from "./redux/store";
-import {connect} from "react-redux";
-import Cell from "./components/cell/cell";
 
 
-function App(props) {
-    console.log(props);
+function App() {
     return (
+        <Provider store={store}>
             <BrowserRouter >
                 <div className={style.main}>
-                    <Route path='/' component={() => <Board board={props.board} dispatch={store.dispatch}/>}/>
+                    <Route path='/' component={() => <Board/>}/>
                 </div>
             </BrowserRouter>
+        </Provider>
     );
 }
 
-
-const mapStateToProps = state => ({
-    'board': state.board,
-    'moves': state.moves
-});
-
-export default connect(mapStateToProps)(App);
-
+export default App;
