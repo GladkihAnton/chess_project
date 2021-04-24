@@ -1,0 +1,32 @@
+.cell {
+    background: black;
+    width:4rem;
+    height: 4rem;
+    position: relative;
+}
+
+.light_cell {
+    background: #a5947d;
+}
+
+.dark_cell {
+    background: #58372d;
+}
+
+.logo {
+    width: 4rem;
+    height: 4rem;
+    position: relative;
+    z-index: 1;
+}
+
+.move {
+    background: gray;
+    border-radius: 50%;
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    height: 15px;
+    width: 15px;
+    z-index: 2;
+}
