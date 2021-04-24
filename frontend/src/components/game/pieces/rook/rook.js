@@ -1,11 +1,10 @@
 import {Component} from "react";
-import bishopLogo from '../../../images/chess_figures/light_bishop.png'
-import style from './bishop.module.css'
-import {ChoosePiece} from "../../../redux/actions/actions";
+import style from "./rook.module.css";
+import rookLogo from "../../../../images/chess_figures/light_rook.png";
+import {ChoosePiece} from "../../../../redux/actions/actions";
 import {connect} from "react-redux";
 
-
-class LightBishop extends Component {
+class LightRook extends Component {
 
     constructor(props) {
         super(props);
@@ -28,13 +27,13 @@ class LightBishop extends Component {
                                 }
                             )
                     }>
-                <img className={style.logo} src={bishopLogo}/>
+                <img className={style.logo} src={rookLogo}/>
             </button>
         )
     }
 
     availableMoves() {
-        const allDirections = [{x: 1, y: 1}, {x: -1, y: 1}, {x: 1, y: -1}, {x: -1, y: -1}]; //todo -> to utils
+        const allDirections = [{x: 1, y: 0}, {x: -1, y: 0}, {x: 0, y: -1}, {x: 0, y: 1}];
 
         let availableMoves = [];
         for (let direction of allDirections) {
@@ -68,7 +67,7 @@ class LightBishop extends Component {
     isOppositePiece(toPosX, toPosY) {
         return this.board[toPosY][toPosX] &&
             this.board[this.posY][this.posX] === this.board[this.posY][this.posX].toUpperCase() ^
-            this.board[toPosY][toPosX] === this.board[toPosY][toPosX].toUpperCase()
+            this.board[toPosY][toPosX] === this.board[toPosY][toPosX].toUpperCase();
     }
 }
 
@@ -78,4 +77,4 @@ function mapStateToProps(state, ownProps) {
     return {board: state.game.board};
 }
 
-export default connect(mapStateToProps, actions)(LightBishop)
+export default connect(mapStateToProps, actions)(LightRook)

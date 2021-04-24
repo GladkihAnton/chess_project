@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.module.css';
-import Board from "./components/board/board";
+import Board from "./components/game/board/board";
 import style from './App.module.css';
 
 import {BrowserRouter} from "react-router-dom";
@@ -9,12 +9,13 @@ import {Provider} from "react-redux/lib/alternate-renderers";
 import store from "./redux/store";
 
 
+
 function App() {
     return (
         <Provider store={store}>
             <BrowserRouter >
                 <div className={style.main}>
-                    <Route path='/' component={() => <Board/>}/>
+                    <Route path='/game' component={() => <Board/>}/>
                 </div>
             </BrowserRouter>
         </Provider>

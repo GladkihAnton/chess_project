@@ -1,11 +1,11 @@
 import {Component} from "react";
-import kingLogo from '../../../images/chess_figures/light_king.png'
-import style from './king.module.css'
-import {ChoosePiece} from "../../../redux/actions/actions";
+import pawnLogo from '../../../../images/chess_figures/light_pawn.png'
+import style from './pawn.module.css'
+import {ChoosePiece} from "../../../../redux/actions/actions";
 import {connect} from "react-redux";
 
 
-class LightKing extends Component {
+class LightPawn extends Component {
 
     constructor(props) {
         super(props);
@@ -28,40 +28,31 @@ class LightKing extends Component {
                                 }
                             )
                     }>
-                <img className={style.logo} src={kingLogo}/>
+                <img className={style.logo} src={pawnLogo}/>
             </button>
         )
     }
 
     availableMoves() {
-        const allDirections = [{x: 1, y: 0}, {x: -1, y: 0}, {x: 0, y: -1}, {x: 0, y: 1},
-            {x: 1, y: 1}, {x: -1, y: 1}, {x: 1, y: -1}, {x: -1, y: -1}];
-
         let availableMoves = [];
-        for (let direction of allDirections) {
-            const toPosX = this.posX + direction['x'];
-            const toPosY = this.posY + direction['y'];
-            if (!this.isMoveLegal(toPosX, toPosY)) {
-                continue;
+
+        if (this.board[this.posY - 1][this.posX] === '') {
+            availableMoves.push({x: this.posX, y: this.posY - 1});
+
+            if (this.posY === 6 && this.board[this.posY - 2][this.posX] === '') {
+                availableMoves.push({x: this.posX, y: this.posY - 2});
             }
-            if (this.isOppositePiece(toPosX, toPosY)) {
-                availableMoves.push({x: toPosX, y: toPosY});
-                continue;
-            }
-            if (!this.canMove(toPosX, toPosY)) {
-                continue;
-            }
-            availableMoves.push({x: toPosX, y: toPosY});
         }
+
+        if (this.isOppositePiece(this.posX + 1, this.posY - 1)) {
+            availableMoves.push({x: this.posX + 1, y: this.posY - 1});
+        }
+
+        if (this.isOppositePiece(this.posX - 1, this.posY - 1)) {
+            availableMoves.push({x: this.posX - 1, y: this.posY - 1});
+        }
+
         return availableMoves;
-    }
-
-    isMoveLegal(toPosX, toPosY) {
-        return 0 <= toPosX && toPosX <= 7 && 0 <= toPosY && toPosY <= 7;
-    }
-
-    canMove(toPosX, toPosY) {
-        return this.board[toPosY][toPosX] === '';
     }
 
     isOppositePiece(toPosX, toPosY) {
@@ -77,4 +68,4 @@ function mapStateToProps(state, ownProps) {
     return {board: state.game.board};
 }
 
-export default connect(mapStateToProps, actions)(LightKing)
+export default connect(mapStateToProps, actions)(LightPawn)
