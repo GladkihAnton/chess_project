@@ -1,7 +1,7 @@
 import {Component} from "react";
 import pawnLogo from '../../../images/chess_figures/light_pawn.png'
 import style from './pawn.module.css'
-import {ChooseLightPawn} from "../../../redux/actions/actions";
+import {ChoosePiece} from "../../../redux/actions/actions";
 import {connect} from "react-redux";
 
 
@@ -18,7 +18,7 @@ class LightPawn extends Component {
         return (
             <button className={style.clickable_cell}
                     onClick={
-                        this.props.ChooseLightPawn
+                        this.props.ChoosePiece
                             .bind(this,
                                 this.availableMoves.bind(this),
                                 {
@@ -31,14 +31,6 @@ class LightPawn extends Component {
                 <img className={style.logo} src={pawnLogo}/>
             </button>
         )
-    }
-
-    canCaptureRight() {
-        return this.posX;
-    }
-
-    canCaptureLeft() {
-        return 5;
     }
 
     availableMoves() {
@@ -64,12 +56,13 @@ class LightPawn extends Component {
     }
 
     isOppositePiece(toPosX, toPosY) {
-        return this.props.board[toPosY][toPosX] &&
-            this.props.board[this.posY][this.posX].localeCompare(this.props.board[toPosY][toPosX]) !== 0
+        return this.board[toPosY][toPosX] &&
+            this.board[this.posY][this.posX] === this.board[this.posY][this.posX].toUpperCase() ^
+            this.board[toPosY][toPosX] === this.board[toPosY][toPosX].toUpperCase();
     }
 }
 
-const actions = {ChooseLightPawn}
+const actions = {ChoosePiece}
 
 function mapStateToProps(state, ownProps) {
     return {board: state.game.board};

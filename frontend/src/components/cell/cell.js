@@ -4,7 +4,11 @@ import style from './cell.module.css'
 import {movePiece} from "../../redux/actions/actions";
 import DarkPawn from '../pieces/pawn/dark_pawn'
 import LightPawn from '../pieces/pawn/light_pawn'
-
+import LightBishop from "../pieces/bishop/bishop";
+import LightRook from "../pieces/rook/rook";
+import LightKnight from "../pieces/knight/knight";
+import LightQueen from "../pieces/queen/queen";
+import LightKing from "../pieces/king/king";
 
 
 class Cell extends Component {
@@ -34,8 +38,24 @@ class Cell extends Component {
             case 'p':
                 return <DarkPawn posX={this.posX} posY={this.posY}/>
             case 'B':
-                return <LightPawn posX={this.posX} posY={this.posY}/>
+                return <LightBishop posX={this.posX} posY={this.posY}/>
             case 'b':
+                return <LightPawn posX={this.posX} posY={this.posY}/>
+            case 'R':
+                return <LightRook posX={this.posX} posY={this.posY}/>
+            case 'r':
+                return <LightPawn posX={this.posX} posY={this.posY}/>
+            case 'N':
+                return <LightKnight posX={this.posX} posY={this.posY}/>
+            case 'n':
+                return <LightPawn posX={this.posX} posY={this.posY}/>
+            case 'Q':
+                return <LightQueen posX={this.posX} posY={this.posY}/>
+            case 'q':
+                return <LightPawn posX={this.posX} posY={this.posY}/>
+            case 'K':
+                return <LightKing posX={this.posX} posY={this.posY}/>
+            case 'k':
                 return <LightPawn posX={this.posX} posY={this.posY}/>
 
         }

@@ -1,4 +1,7 @@
-import {CHOOSE_DARK_PAWN, CHOOSE_LIGHT_PAWN, MOVE_PIECE} from "../actions/actions";
+import {
+    CHOOSE_PIECE,
+    MOVE_PIECE
+} from "../actions/actions";
 const initialState = {
     board: [
         ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
@@ -7,8 +10,8 @@ const initialState = {
         ['', '', '', '', '', '', '', ''],
         ['', '', '', '', '', '', '', ''],
         ['', '', '', '', 'p', '', '', ''],
-        ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-        ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r']
+        ['P', 'P', 'P', '', '', 'P', 'P', 'P'],
+        ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
     ],
     moves: [
         ['', '', '', '', '', '', '', ''],
@@ -41,7 +44,7 @@ export function game(state=initialState, action) {
         ],
     }
     switch(action.type) {
-        case CHOOSE_LIGHT_PAWN: {
+        case CHOOSE_PIECE: {
             action.availableMoves.map(
                 (availableMove) => {newState.moves[availableMove['y']][availableMove['x']] = 'X'}
             );
@@ -49,20 +52,6 @@ export function game(state=initialState, action) {
                 ...newState,
                 chosenPiece: action.chosenPiece
             };
-        }
-
-        case CHOOSE_DARK_PAWN: {
-            const posX = action.posX;
-            const posY = action.posY;
-
-            newState.moves[posY + 1][posX] = 'X';
-            newState.moves[posY + 2][posX] = 'X';
-            newState.chosenPiece = {
-                posX,
-                posY,
-                piece: state.board[posY][posX]
-            }
-            return newState;
         }
 
         case MOVE_PIECE: {
