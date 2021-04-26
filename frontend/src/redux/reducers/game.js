@@ -66,6 +66,6 @@ export function game(state=initialState, action) {
             return newState;
         }
 
-        default: return initialState;
+        default: return state;
     }
 }
