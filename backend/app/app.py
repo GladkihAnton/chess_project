@@ -15,5 +15,5 @@ async def hello(request):
 def init_func(argv):
     app = web.Application()
     app.router.add_post("/signup", RegisterHandler.post)
-    # app.router.add_get("/login")
+    app.router.add_get("/signup", RegisterHandler.get)
     return app
