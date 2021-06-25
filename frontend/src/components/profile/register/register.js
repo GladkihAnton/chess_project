@@ -2,8 +2,8 @@ import React, {Component} from "react";
 
 import style from './register.module.css';
 import {connect} from "react-redux";
-import {updateField} from "../../../redux/actions/actions";
 import configFile from "../../../config.json"
+import axios from "axios";
 
 class Register extends Component {
 
@@ -17,18 +17,6 @@ class Register extends Component {
         this.confirmPasswordInput = React.createRef();
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.email !== prevProps.email) {
-            this.email = prevProps.email
-        }
-        if (this.password !== prevProps.password) {
-            this.password = prevProps.password
-        }
-        if (this.confirmPassword !== prevProps.confirmPassword) {
-            this.confirmPassword = prevProps.confirmPassword
-        }
-    }
-
     render() {
         return (<div className={style.form}>{this.prepareForm()}</div>)
     }
@@ -36,19 +24,20 @@ class Register extends Component {
     prepareForm() {
         return (
             <form className="form-signup" onSubmit={this.registerProfile.bind(this)}>
-                <h2 className="form-signup-heading">Please sign in</h2>
+                <h2 className="form-signup-heading">Please sign up</h2>
                 <label htmlFor="inputEmail" className="sr-only">Email address</label>
                 <input type="email" id="email" ref={this.emailInput} className="form-control"
-                       value={this.props.email} onChange={this.props.updateField} placeholder="Email address" required
+                       value={this.email} onChange={this.updateField.bind(this)} placeholder="Email address" required
                        autoFocus/>
+                <div className={style.user_already_exist_tip}>Пользователя с такой почтой уже существует</div>
                 <label htmlFor="password" className="sr-only">Password</label>
                 <input type="password" id="password" ref={this.passwordInput} className="form-control"
-                       value={this.props.password} onChange={this.props.updateField}
+                       value={this.password} onChange={this.updateField.bind(this)}
                        placeholder="Password" required/>
-
+                <div className={style.passwords_dont_match_tip}>Пароли не совпадают</div>
                 <label htmlFor="confirmPassword" className="sr-only">Confirm Password</label>
                 <input type="password" id="confirmPassword" ref={this.confirmPasswordInput} className="form-control"
-                       value={this.props.confirmPassword} onChange={this.props.updateField}
+                       value={this.confirmPassword} onChange={this.updateField.bind(this)}
                        placeholder="ConfirmPassword" required/>
 
                 <button className="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
@@ -58,49 +47,56 @@ class Register extends Component {
 
     registerProfile(e) {
         e.preventDefault();
+        this.clearError();
         if (this.password !== this.confirmPassword) {
-            this.showError();
+            this.showError('passwords_dont_match');
             return;
         }
 
-        fetch(`${configFile.SERVER_URL}/signup`, {
+        axios.post(`${configFile.SERVER_URL}/signup`, {
             method: 'POST',
-            mode: 'no-cors',
             cache: 'no-cache',
             credentials: 'same-origin',
             headers: {
               'Content-Type': 'application/json'
             },
-            redirect: 'follow',
-            referrerPolicy: 'no-referrer',
             body: JSON.stringify({email: this.email, password: this.password})
         })
         .then((response) => {
-            console.log(response);
-            return response.json();
+            return response['data'];
         })
         .then((data) => {
-            console.log(data);
+            if ('error' in data) {
+                this.showError(data['error']);
+            }
         });
     }
 
-    showError() {
-        this.passwordInput.current.classList.add('is-invalid');
-        this.confirmPasswordInput.current.classList.add('is-invalid');
+    updateField(element) {
+        this[element.target.id] = element.target.value;
+    }
+
+    showError(error) {
+        switch (error) {
+            case 'passwords_dont_match':
+                this.passwordInput.current.classList.add(style.passwords_dont_match, 'is-invalid');
+                this.confirmPasswordInput.current.classList.add('is-invalid');
+                break;
+            case 'user_already_exist':
+                this.emailInput.current.classList.add(style.user_already_exist, 'is-invalid');
+                break;
+        }
+    }
+
+    clearError() {
+        const classes = [style.passwords_dont_match, style.user_already_exist, 'is-invalid'];
+
+        this.passwordInput.current.classList.remove(...classes);
+        this.confirmPasswordInput.current.classList.remove(...classes);
+        this.emailInput.current.classList.remove(...classes);
     }
 }
 
-
-function  mapStateToProps(state, ownProps) {
-    return {
-        email: state.profile.signup.email,
-        password: state.profile.signup.password,
-        confirmPassword: state.profile.signup.confirmPassword,
-    };
-}
-
-const actions = {updateField}
-
 export default connect(
-    mapStateToProps, actions
+    null, null
 )(Register)
