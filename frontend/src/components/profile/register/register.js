@@ -53,15 +53,20 @@ class Register extends Component {
             return;
         }
 
-        axios.post(`${configFile.SERVER_URL}/signup`, {
-            method: 'POST',
-            cache: 'no-cache',
-            credentials: 'same-origin',
-            headers: {
-              'Content-Type': 'application/json'
+        axios.post(`${configFile.SERVER_URL}/signup`,
+            {
+                body: JSON.stringify({email: this.email, password: this.password})
             },
-            body: JSON.stringify({email: this.email, password: this.password})
-        })
+            {
+                method: 'POST',
+                cache: 'no-cache',
+                crossDomain: true, // todo убрать мб лишнее
+                credentials: 'include',
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
         .then((response) => {
             return response['data'];
         })

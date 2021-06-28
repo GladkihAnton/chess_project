@@ -28,5 +28,10 @@ TABLES = [
         Column('id', Integer, primary_key=True),
         Column('email', VARCHAR(256), key='email'),
         Column('password', VARCHAR(32)),
+    ),
+
+    Table(
+        'session', metadata,
+        Column('session_id', VARCHAR(32), primary_key=True),
     )
 ]

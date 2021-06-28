@@ -1,18 +1,20 @@
 import json
 from typing import Dict
+from functools import partial
 
 from aiohttp import web
 from sqlalchemy import sql, insert, select, Table
 
 from app import db
 from app.utils import hash_password
+from app.engine.session_engine import SessionEngine
 
 
-class RegisterHandler:
+class RegisterHandler(web.View):
     PLAYER_T = 'player'
 
     @staticmethod
-    async def post(request: web.Request) -> web.Response:
+    async def post(request: web.Request, chess_app) -> web.Response:
         request_json: dict = await request.json()
         body: Dict[str, str] = json.loads(request_json['body'])
 
@@ -27,7 +29,11 @@ class RegisterHandler:
         with db.get_connection() as conn:
             conn.execute(query)
 
-        return web.json_response({'result': 'ok'})
+        response = web.json_response({'result': 'ok'})
+
+        response.set_cookie('session_id', 'session.session_id', secure=True, samesite='None')
+
+        return response
 
     @staticmethod
     def _build_query(data: Dict[str, str]) -> sql.Insert:
