@@ -4,6 +4,7 @@ import style from './register.module.css';
 import {connect} from "react-redux";
 import configFile from "../../../config.json"
 import axios from "axios";
+import request from "../../../utils/request";
 
 class Register extends Component {
 
@@ -53,27 +54,22 @@ class Register extends Component {
             return;
         }
 
-        axios.post(`${configFile.SERVER_URL}/signup`,
+        request.post('/auth/signup',
             {
                 body: JSON.stringify({email: this.email, password: this.password})
             },
-            {
-                method: 'POST',
-                cache: 'no-cache',
-                crossDomain: true, // todo убрать мб лишнее
-                credentials: 'include',
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
+            {}
+        )
         .then((response) => {
             return response['data'];
         })
         .then((data) => {
             if ('error' in data) {
                 this.showError(data['error']);
+                return;
             }
+            localStorage.setItem('expiresAt', this.parseJwt(data['access_token'])['exp']);
+            localStorage.setItem('accessToken', data['access_token']);
         });
     }
 
@@ -99,6 +95,16 @@ class Register extends Component {
         this.passwordInput.current.classList.remove(...classes);
         this.confirmPasswordInput.current.classList.remove(...classes);
         this.emailInput.current.classList.remove(...classes);
+    }
+
+    parseJwt (token) {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        let jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        return JSON.parse(jsonPayload);
     }
 }
 

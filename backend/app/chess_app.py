@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from functools import partial
-
 from aiohttp import web
-from aiohttp_middlewares import cors_middleware
+from aiohttp_middlewares import cors_middleware, error_middleware
 
-from app.entrypoints.register.handler import RegisterHandler
+from app.entrypoints.auth.profile_handler import ProfileRequestHandler
+from app.entrypoints.auth.register.handler import RegisterRequestHandler
+from app.entrypoints.auth.refresh_token.handler import RefreshTokenRequestHandler
+from app.entrypoints.auth.login.handler import LoginRequestHandler
+from app.middlewares.authenticate_middleware import authenticate_middleware
 
 
 class ChessApp(web.Application):
@@ -18,13 +20,31 @@ class ChessApp(web.Application):
     def make_app(cls):
         chess_app = cls(
             middlewares=[
-                cors_middleware(origins=["http://localhost:3000"], allow_credentials=True, max_age=3600)
+                cors_middleware(origins=['http://localhost:3000'], allow_credentials=True),
+                error_middleware(),
+                # JWTMiddleware('secret_key'),
+                authenticate_middleware
             ])
-        chess_app.router.add_post("/signup", partial(RegisterHandler.post, chess_app=chess_app))
+        chess_app['access_token_salt'] = 'password_salt'  # todo get it from env.file
+
+        chess_app.router.add_get('/get-session-data', ProfileRequestHandler.get_session_data)
+
+        auth_app = cls(
+            middlewares=[
+                cors_middleware(origins=['http://localhost:3000'], allow_credentials=True),
+                error_middleware(),
+                # JWTMiddleware('secret_key'),
+            ])
+        
+        auth_app.router.add_post('/signup', RegisterRequestHandler.post)
+        auth_app.router.add_post('/refresh-token', RefreshTokenRequestHandler.refresh)
+        auth_app.router.add_post('/login', LoginRequestHandler.login)
+
+        chess_app.add_subapp('/auth', auth_app)
 
         return chess_app
 
 
 if __name__ == '__main__':
-    chess_app = ChessApp.make_app()
-    web.run_app(chess_app, host='localhost', port=8080)
+    app = ChessApp.make_app()
+    web.run_app(app, host='localhost', port=8080)

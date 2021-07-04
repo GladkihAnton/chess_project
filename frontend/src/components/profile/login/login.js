@@ -3,38 +3,70 @@ import React, {Component} from "react";
 import style from './login.module.css';
 import {connect} from "react-redux";
 import {Link} from "react-router-dom";
+import request from "../../../utils/request";
 
 class Login extends Component {
+
+    constructor(props) {
+        super(props);
+        this.email = props.email;
+        this.password = props.password;
+        this.emailInput = React.createRef();
+        this.passwordInput = React.createRef();
+    }
 
     render() {
         return (
             <div className={style.form}>
-                <form className="form-signin">
+                <form className="form-signin" onSubmit={this.doLogin.bind(this)}>
                     <h2 className="form-signin-heading">Please sign in</h2>
-                    <label for="email" className="sr-only">Email address</label>
-                    <input type="email"  id="email" className="form-control" placeholder="Email address" required autofocus />
-                    <label for="inputPassword" className="sr-only">Password</label>
-                    <input type="password" id="password" className="form-control" placeholder="Password" required />
+                    <label htmlFor="email" className="sr-only">Email address</label>
+                    <input type="email"  id="email" ref={this.emailInput} className="form-control"
+                           placeholder="Email address" onChange={this.updateField.bind(this)} required autoFocus />
+                    <label htmlFor="password" className="sr-only">Password</label>
+                    <input type="password" id="password" ref={this.passwordInput} className="form-control"
+                           placeholder="Password" onChange={this.updateField.bind(this)} required />
 
-                    <button className="btn btn-lg btn-primary btn-block" type="button">Sign in</button>
+                    <button className="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
                 </form>
                 <div>
-                    <Link to="/signup">{'Signup'}</Link>
+                    <Link to="/auth/signup">{'Signup'}</Link>
                 </div>
             </div>
 
         )
     }
+
+    doLogin(e) {
+        e.preventDefault();
+        // this.clearError();
+        // if (this.password !== this.confirmPassword) {
+            // this.showError('passwords_dont_match');
+            // return;
+        // }
+        request.post('/auth/login',
+            {
+                body: JSON.stringify({email: this.email, password: this.password})
+            },
+            {}
+        )
+        .then((response) => {
+            return response['data'];
+        })
+        .then((data) => {
+            if ('error' in data) {
+                this.showError(data['error']);
+            }
+        });
+    }
+
+
+    updateField(element) {
+        this[element.target.id] = element.target.value;
+    }
 }
 
-function  mapStateToProps(state, ownProps) {
-    return {
-        board: state.game.board,
-        moves: state.game.moves,
-        chosenPiece: state.game.chosenPiece
-    };
-}
 
 export default connect(
-    mapStateToProps, null
+    null, null
 )(Login)

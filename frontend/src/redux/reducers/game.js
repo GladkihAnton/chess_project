@@ -1,6 +1,6 @@
 import {
-    CHOOSE_PIECE,
-    MOVE_PIECE
+    CHOOSE_PIECE_ACTION,
+    MOVE_PIECE_ACTION
 } from "../actions/actions";
 const initialState = {
     board: [
@@ -44,7 +44,7 @@ export function game(state=initialState, action) {
         ],
     }
     switch(action.type) {
-        case CHOOSE_PIECE: {
+        case CHOOSE_PIECE_ACTION: {
             action.availableMoves.map(
                 (availableMove) => {newState.moves[availableMove['y']][availableMove['x']] = 'X'}
             );
@@ -54,7 +54,7 @@ export function game(state=initialState, action) {
             };
         }
 
-        case MOVE_PIECE: {
+        case MOVE_PIECE_ACTION: {
             const toPosX = action.posX;
             const toPosY = action.posY;
             const fromPosX = state.chosenPiece.posX;
