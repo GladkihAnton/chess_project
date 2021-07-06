@@ -1,7 +1,7 @@
 import {Component} from "react";
 import pawnLogo from '../../../../images/chess_figures/light_pawn.png'
 import style from './pawn.module.css'
-import {ChoosePiece} from "../../../../redux/actions/actions";
+import {ChoosePiece} from "../../../../redux/actions/game";
 import {connect} from "react-redux";
 
 

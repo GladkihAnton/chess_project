@@ -1,0 +1,20 @@
+.form {
+    max-width: 500px;
+    position: relative;
+    top: 50px;
+    left: 33%;
+}
+
+.passwords_dont_match_tip,
+.user_already_exist_tip {
+    display: none;
+    color: red;
+}
+
+.passwords_dont_match + .passwords_dont_match_tip {
+    display: block;
+}
+
+.user_already_exist + .user_already_exist_tip {
+    display: block;
+}
