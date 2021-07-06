@@ -1,7 +1,6 @@
-import {
-    CHOOSE_PIECE_ACTION,
-    MOVE_PIECE_ACTION
-} from "../actions/actions";
+import {CHOOSE_PIECE_ACTION, MOVE_PIECE_ACTION} from "../actions/game";
+
+
 const initialState = {
     board: [
         ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],

@@ -4,6 +4,7 @@ import style from './login.module.css';
 import {connect} from "react-redux";
 import {Link} from "react-router-dom";
 import request from "../../../utils/request";
+import {doLogin} from "../utils";
 
 class Login extends Component {
 
@@ -18,7 +19,7 @@ class Login extends Component {
     render() {
         return (
             <div className={style.form}>
-                <form className="form-signin" onSubmit={this.doLogin.bind(this)}>
+                <form className="form-signin" onSubmit={this.TryLogin.bind(this)}>
                     <h2 className="form-signin-heading">Please sign in</h2>
                     <label htmlFor="email" className="sr-only">Email address</label>
                     <input type="email"  id="email" ref={this.emailInput} className="form-control"
@@ -37,16 +38,12 @@ class Login extends Component {
         )
     }
 
-    doLogin(e) {
+    TryLogin(e) {
         e.preventDefault();
-        // this.clearError();
-        // if (this.password !== this.confirmPassword) {
-            // this.showError('passwords_dont_match');
-            // return;
-        // }
         request.post('/auth/login',
             {
-                body: JSON.stringify({email: this.email, password: this.password})
+                email: this.email,
+                password: this.password
             },
             {}
         )
@@ -56,10 +53,15 @@ class Login extends Component {
         .then((data) => {
             if ('error' in data) {
                 this.showError(data['error']);
+                return;
             }
+            doLogin(data['access_token']);
         });
     }
 
+    showError(error) {
+        console.log(error);
+    }
 
     updateField(element) {
         this[element.target.id] = element.target.value;

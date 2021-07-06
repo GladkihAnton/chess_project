@@ -1,47 +1,52 @@
 import axios from 'axios'
 import configFile from '../config.json'
-import store from '../redux/store'
+import {doLogout, doLogin} from '../components/auth/utils'
+import store from "../redux/store";
+import {updateTokenRefreshing} from "../redux/actions/auth";
 
 const config = {
     baseURL: configFile.SERVER_URL,
-    headers: {'Authorization': 'asdasd'},
-    withCredentials: true
-}
+    headers: {'Authorization': `Bearer ${localStorage.getItem('accessToken')}`},
 
-if (store.getState().profile.accessToken) {
-    config.headers['Authorization'] = `Bearer ${store.getState().profile.accessToken}`
+    withCredentials: true
 }
 
 const request = axios.create(config);
 
-// request.interceptors.request.use(async (config) => {
-//     const expireAt = localStorage.getItem('expiresAt');
-//     let token = localStorage.getItem('accessToken');
-//     if (dayjs(expireAt).diff(dayjs()) < 1) {
-//         const data = fetch('/refresh-token',
-//             {
-//         method: 'POST',
-//         body: JSON.stringify({'access_token': token}), // данные могут быть 'строкой' или {объектом}!
-//         headers: {
-//           'Content-Type': 'application/json'
-//         }
-//         })
-//         .then((response) => {
-//             return response['data'];
-//         })
-//         .then((data) => {
-//             store.dispatch(updateSessionData(data));
-//     });
-//
-//     token = typeof data === 'string' ? data : await data();
-//   }
-//   // setting updated token
-//   // localStorage.setItem('authToken', token);
-//   //   console.log('ypa');
-//     delete config.headers['Authorization'];
-//     return config;
-// }, (err) => {
-//    console.log("error in getting ",err)
-// });
+request.interceptors.request.use(async (config) => {
+    const expireAt = localStorage.getItem('expiresAt');
+    let token = localStorage.getItem('accessToken');
+    if (!store.getState().auth.isTokenRefreshing && token && expireAt - parseInt(new Date().getTime() / 1000) < 60) {
+        store.dispatch(updateTokenRefreshing(true));
+        const response = await fetch(`${configFile.SERVER_URL}/auth/refresh-token`,
+            {
+                method: 'POST',
+                body: JSON.stringify({'access_token': token}),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+        const data = await response.json();
+        if ('error' in data) {
+            switch (data['error']) {
+                case 'token_is_invalid':
+                    doLogout();
+                    store.dispatch(updateTokenRefreshing(false));
+                    return config;
+            }
+        } else if ('access_token' in data) {
+            token = data['access_token'];
+            doLogin(token);
+        }
+
+    }
+    store.dispatch(updateTokenRefreshing(false));
+
+    config.headers['Authorization'] = `Bearer ${token}`;
+    return config;
+}, (err) => {
+   console.log("error in getting ",err)
+});
 
 export default request

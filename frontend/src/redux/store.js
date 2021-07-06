@@ -1,10 +1,10 @@
 import {combineReducers, createStore} from "redux";
 import {game} from "./reducers/game";
-import {profile} from "./reducers/profile";
+import {auth} from "./reducers/auth";
 
 function configureStore() {
     return createStore(
-        combineReducers({game, profile}),
+        combineReducers({game, auth}),
     );
 }
 let store = configureStore();

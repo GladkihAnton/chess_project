@@ -1,7 +1,7 @@
 import {Component} from "react";
 import queenLogo from '../../../../images/chess_figures/light_queen.png'
 import style from './queen.module.css'
-import {ChoosePiece} from "../../../../redux/actions/actions";
+import {ChoosePiece} from "../../../../redux/actions/game";
 import {connect} from "react-redux";
 
 

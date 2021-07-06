@@ -1,7 +1,7 @@
 import {Component} from "react";
 import knightLogo from '../../../../images/chess_figures/light_knight.png'
 import style from './knight.module.css'
-import {ChoosePiece} from "../../../../redux/actions/actions";
+import {ChoosePiece} from "../../../../redux/actions/game";
 import {connect} from "react-redux";
 
 

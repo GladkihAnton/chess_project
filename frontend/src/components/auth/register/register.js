@@ -2,9 +2,8 @@ import React, {Component} from "react";
 
 import style from './register.module.css';
 import {connect} from "react-redux";
-import configFile from "../../../config.json"
-import axios from "axios";
 import request from "../../../utils/request";
+import {doLogin} from "../utils";
 
 class Register extends Component {
 
@@ -68,8 +67,7 @@ class Register extends Component {
                 this.showError(data['error']);
                 return;
             }
-            localStorage.setItem('expiresAt', this.parseJwt(data['access_token'])['exp']);
-            localStorage.setItem('accessToken', data['access_token']);
+            doLogin(data['access_token']);
         });
     }
 
@@ -95,16 +93,6 @@ class Register extends Component {
         this.passwordInput.current.classList.remove(...classes);
         this.confirmPasswordInput.current.classList.remove(...classes);
         this.emailInput.current.classList.remove(...classes);
-    }
-
-    parseJwt (token) {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        let jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-
-        return JSON.parse(jsonPayload);
     }
 }
 

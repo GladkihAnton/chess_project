@@ -1,7 +1,7 @@
 import {Component} from "react";
 import style from "./rook.module.css";
 import rookLogo from "../../../../images/chess_figures/light_rook.png";
-import {ChoosePiece} from "../../../../redux/actions/actions";
+import {ChoosePiece} from "../../../../redux/actions/game";
 import {connect} from "react-redux";
 
 class LightRook extends Component {

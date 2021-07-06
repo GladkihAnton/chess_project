@@ -7,24 +7,36 @@ from sqlalchemy import Table, sql, select
 from sqlalchemy.engine import LegacyRow
 
 from app import db
-from app.config import JWT_SECRET, JWT_ALGORITHM, JWT_EXP_DELTA_SECONDS
+from app.config import JWT_SECRET, JWT_ALGORITHM, JWT_EXP_DELTA_SECONDS, WHITE_LIST_PATHS
 
 
 @web.middleware
 async def authenticate_middleware(request, handler):
     request.user = None
-    jwt_token = request.headers.get('authorization', None)
-    if jwt_token:
-        try:
-            payload = jwt.decode(jwt_token, JWT_SECRET, JWT_ALGORITHM, leeway=JWT_EXP_DELTA_SECONDS)
-        except (jwt.DecodeError, jwt.ExpiredSignatureError):
-            return web.json_response({'error': 'token_is_invalid'}, status=401)
+    if _is_request_in_white_list(request, WHITE_LIST_PATHS):
+        return await handler(request)
 
-        request.user = _get_player(payload['pla'])
+    authorization_header = request.headers.get('authorization', None)
+    if not authorization_header:
+        return web.json_response({'error': 'token_is_invalid'}, status=401)
+
+    try:
+        scheme, token = authorization_header.strip().split(' ')
+    except ValueError:
+        raise web.HTTPForbidden(
+            reason='Invalid authorization header',
+        )
+
+    try:
+        payload = jwt.decode(token, JWT_SECRET, JWT_ALGORITHM, leeway=JWT_EXP_DELTA_SECONDS)
+    except jwt.DecodeError:
+        return web.json_response({'error': 'token_is_invalid'}, status=401)
+
+    request.user = _get_player(payload['player_id'])
     return await handler(request)
 
 
-def check_request_in_white_list(request, entries):
+def _is_request_in_white_list(request, entries):
     for pattern in entries:
         if re.match(pattern, request.path):
             return True

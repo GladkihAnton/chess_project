@@ -1,7 +1,7 @@
 import {Component} from "react";
 import bishopLogo from '../../../../images/chess_figures/light_bishop.png'
 import style from './bishop.module.css'
-import {ChoosePiece} from "../../../../redux/actions/actions";
+import {ChoosePiece} from "../../../../redux/actions/game";
 import {connect} from "react-redux";
 
 

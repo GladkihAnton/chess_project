@@ -7,22 +7,24 @@ import {BrowserRouter} from "react-router-dom";
 import {Route, Redirect} from "react-router";
 import {Provider} from "react-redux/lib/alternate-renderers";
 import store from "./redux/store";
-import Login from "./components/profile/login/login";
-import Register from "./components/profile/register/register";
-import {getSessionData} from "./components/profile/session/session"
+import Login from "./components/auth/login/login";
+import Register from "./components/auth/register/register";
+import {getSessionData} from "./components/auth/session/session"
 import {connect} from "react-redux";
+import {doLogout} from "./components/auth/utils";
 
 
 class App extends Component {
 
     render() {
-        console.log(this.props.isAuthenticate);
         return (
             <Provider store={store}>
                 <BrowserRouter>
                     {this.props.isAuthenticate &&
                             <div className={style.main}>
+                                <a href='#' onClick={doLogout}>Logout</a>
                                 <Route path='/game' component={() => <Board/>}/>
+                                <Route path='*' component={() => <Redirect to="/game"/>}/>
                                 {/*<Route exact path='/auth/login' component={() => <Login/>}/>*/}
                                 {/*<Route path='/signup' render={() => true ? (<Redirect to="/"/> ) : (<Register/>)}/>*/}
                             </div>
@@ -42,7 +44,7 @@ class App extends Component {
 
 function  mapStateToProps(state, ownProps) {
     return {
-        isAuthenticate: state.profile.isAuthenticate,
+        isAuthenticate: state.auth.isAuthenticate,
     };
 }
 

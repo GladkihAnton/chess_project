@@ -3,7 +3,7 @@ from __future__ import annotations
 from aiohttp import web
 from aiohttp_middlewares import cors_middleware, error_middleware
 
-from app.entrypoints.auth.profile_handler import ProfileRequestHandler
+from app.entrypoints.profile.hanlder import ProfileRequestHandler
 from app.entrypoints.auth.register.handler import RegisterRequestHandler
 from app.entrypoints.auth.refresh_token.handler import RefreshTokenRequestHandler
 from app.entrypoints.auth.login.handler import LoginRequestHandler
@@ -22,23 +22,21 @@ class ChessApp(web.Application):
             middlewares=[
                 cors_middleware(origins=['http://localhost:3000'], allow_credentials=True),
                 error_middleware(),
-                # JWTMiddleware('secret_key'),
                 authenticate_middleware
             ])
         chess_app['access_token_salt'] = 'password_salt'  # todo get it from env.file
 
-        chess_app.router.add_get('/get-session-data', ProfileRequestHandler.get_session_data)
+        chess_app.router.add_get('/get-session-data', ProfileRequestHandler)
 
         auth_app = cls(
             middlewares=[
                 cors_middleware(origins=['http://localhost:3000'], allow_credentials=True),
                 error_middleware(),
-                # JWTMiddleware('secret_key'),
             ])
         
-        auth_app.router.add_post('/signup', RegisterRequestHandler.post)
-        auth_app.router.add_post('/refresh-token', RefreshTokenRequestHandler.refresh)
-        auth_app.router.add_post('/login', LoginRequestHandler.login)
+        auth_app.router.add_post('/signup', RegisterRequestHandler)
+        auth_app.router.add_post('/refresh-token', RefreshTokenRequestHandler)
+        auth_app.router.add_post('/login', LoginRequestHandler)
 
         chess_app.add_subapp('/auth', auth_app)
 

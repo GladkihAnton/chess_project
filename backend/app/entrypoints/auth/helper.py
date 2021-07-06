@@ -9,7 +9,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.engine import LegacyRow
 
 from app import db
-from app.config import JWT_SECRET, JWT_EXP_DELTA_SECONDS
+from app.config import JWT_SECRET, JWT_EXP_DELTA_SECONDS, JWT_ALGORITHM
 
 JWT_TOKEN_T = 'jwt_token'
 
@@ -21,9 +21,9 @@ def do_login(player: LegacyRow) -> web.Response:
     access_token = jwt.encode(payload={
         'exp': now_ts + JWT_EXP_DELTA_SECONDS,
         'player_id': player.id.hex
-    }, key=JWT_SECRET)
+    }, key=JWT_SECRET, algorithm=JWT_ALGORITHM)
 
-    last_six_letters = slice(-1, -7, -1)
+    last_six_letters = slice(len(access_token) - 6, len(access_token))
     refresh_token = uuid.uuid4().hex + access_token[last_six_letters]
 
     response = web.json_response({'access_token': access_token})
@@ -34,7 +34,6 @@ def do_login(player: LegacyRow) -> web.Response:
         'now_ts': now_ts,
         'player_id': player.id
     })
-
     return response
 
 

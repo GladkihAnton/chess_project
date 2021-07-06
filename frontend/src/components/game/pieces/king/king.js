@@ -1,7 +1,7 @@
 import {Component} from "react";
 import kingLogo from '../../../../images/chess_figures/light_king.png'
 import style from './king.module.css'
-import {ChoosePiece} from "../../../../redux/actions/actions";
+import {ChoosePiece} from "../../../../redux/actions/game";
 import {connect} from "react-redux";
 
 
