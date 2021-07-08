@@ -23,7 +23,7 @@ export function auth(state=initialState, action) {
         }
 
         case UPDATE_TOKEN_REFRESHING_ACTION: {
-            newState.isAuthenticate = action.isRefreshing;
+            newState.isTokenRefreshing = action.isRefreshing;
             return newState;
         }
 

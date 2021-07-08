@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import './App.module.css';
-import Board from "./components/game/board/board";
+import Board from "./components/dashboard/game/board/board";
 import style from './App.module.css';
 
 import {BrowserRouter} from "react-router-dom";
@@ -12,6 +12,7 @@ import Register from "./components/auth/register/register";
 import {getSessionData} from "./components/auth/session/session"
 import {connect} from "react-redux";
 import {doLogout} from "./components/auth/utils";
+import Dashboard from "./components/dashboard/dashboard/dashboard";
 
 
 class App extends Component {
@@ -24,7 +25,8 @@ class App extends Component {
                             <div className={style.main}>
                                 <a href='#' onClick={doLogout}>Logout</a>
                                 <Route path='/game' component={() => <Board/>}/>
-                                <Route path='*' component={() => <Redirect to="/game"/>}/>
+                                <Route path='/dashboard' component={() => <Dashboard/>}/>
+                                <Route path='*' component={() => <Redirect to="/dashboard"/>}/>
                                 {/*<Route exact path='/auth/login' component={() => <Login/>}/>*/}
                                 {/*<Route path='/signup' render={() => true ? (<Redirect to="/"/> ) : (<Register/>)}/>*/}
                             </div>

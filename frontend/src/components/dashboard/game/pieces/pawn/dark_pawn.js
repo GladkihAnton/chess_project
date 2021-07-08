@@ -1,5 +1,5 @@
 import {Component} from "react";
-import pawnLogo from '../../../../images/chess_figures/dark_pawn.png'
+import pawnLogo from '../../../../../images/chess_figures/dark_pawn.png'
 import style from './pawn.module.css'
 import {connect} from "react-redux";
 

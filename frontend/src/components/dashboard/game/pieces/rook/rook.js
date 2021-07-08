@@ -1,11 +1,10 @@
 import {Component} from "react";
-import kingLogo from '../../../../images/chess_figures/light_king.png'
-import style from './king.module.css'
-import {ChoosePiece} from "../../../../redux/actions/game";
+import style from "./rook.module.css";
+import rookLogo from "../../../../../images/chess_figures/light_rook.png";
+import {ChoosePiece} from "../../../../../redux/actions/game";
 import {connect} from "react-redux";
 
-
-class LightKing extends Component {
+class LightRook extends Component {
 
     constructor(props) {
         super(props);
@@ -28,30 +27,31 @@ class LightKing extends Component {
                                 }
                             )
                     }>
-                <img className={style.logo} src={kingLogo}/>
+                <img className={style.logo} src={rookLogo}/>
             </button>
         )
     }
 
     availableMoves() {
-        const allDirections = [{x: 1, y: 0}, {x: -1, y: 0}, {x: 0, y: -1}, {x: 0, y: 1},
-            {x: 1, y: 1}, {x: -1, y: 1}, {x: 1, y: -1}, {x: -1, y: -1}];
+        const allDirections = [{x: 1, y: 0}, {x: -1, y: 0}, {x: 0, y: -1}, {x: 0, y: 1}];
 
         let availableMoves = [];
         for (let direction of allDirections) {
-            const toPosX = this.posX + direction['x'];
-            const toPosY = this.posY + direction['y'];
-            if (!this.isMoveLegal(toPosX, toPosY)) {
-                continue;
-            }
-            if (this.isOppositePiece(toPosX, toPosY)) {
+            for (let moveDist = 1; moveDist < 8; moveDist++) {
+                const toPosX = this.posX + direction['x'] * moveDist;
+                const toPosY = this.posY + direction['y'] * moveDist;
+                if (!this.isMoveLegal(toPosX, toPosY)) {
+                    break;
+                }
+                if (this.isOppositePiece(toPosX, toPosY)) {
+                    availableMoves.push({x: toPosX, y: toPosY});
+                    break;
+                }
+                if (!this.canMove(toPosX, toPosY)) {
+                    break;
+                }
                 availableMoves.push({x: toPosX, y: toPosY});
-                continue;
             }
-            if (!this.canMove(toPosX, toPosY)) {
-                continue;
-            }
-            availableMoves.push({x: toPosX, y: toPosY});
         }
         return availableMoves;
     }
@@ -77,4 +77,4 @@ function mapStateToProps(state, ownProps) {
     return {board: state.game.board};
 }
 
-export default connect(mapStateToProps, actions)(LightKing)
+export default connect(mapStateToProps, actions)(LightRook)

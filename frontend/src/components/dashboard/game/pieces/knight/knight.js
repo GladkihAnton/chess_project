@@ -1,11 +1,11 @@
 import {Component} from "react";
-import queenLogo from '../../../../images/chess_figures/light_queen.png'
-import style from './queen.module.css'
-import {ChoosePiece} from "../../../../redux/actions/game";
+import knightLogo from '../../../../../images/chess_figures/light_knight.png'
+import style from './knight.module.css'
+import {ChoosePiece} from "../../../../../redux/actions/game";
 import {connect} from "react-redux";
 
 
-class LightQueen extends Component {
+class LightKnight extends Component {
 
     constructor(props) {
         super(props);
@@ -28,32 +28,30 @@ class LightQueen extends Component {
                                 }
                             )
                     }>
-                <img className={style.logo} src={queenLogo}/>
+                <img className={style.logo} src={knightLogo}/>
             </button>
         )
     }
 
     availableMoves() {
-        const allDirections = [{x: 1, y: 0}, {x: -1, y: 0}, {x: 0, y: -1}, {x: 0, y: 1},
-                               {x: 1, y: 1}, {x: -1, y: 1}, {x: 1, y: -1}, {x: -1, y: -1}];
+        const allDirections = [{x: 2, y: 1}, {x: -2, y: 1}, {x: -1, y: 2}, {x: 1, y: 2},
+                               {x: 2, y: -1}, {x: -2, y: -1}, {x: -1, y: -2}, {x: 1, y: -2}];
 
         let availableMoves = [];
         for (let direction of allDirections) {
-            for (let moveDist = 1; moveDist < 8; moveDist++) {
-                const toPosX = this.posX + direction['x'] * moveDist;
-                const toPosY = this.posY + direction['y'] * moveDist;
-                if (!this.isMoveLegal(toPosX, toPosY)) {
-                    break;
-                }
-                if (this.isOppositePiece(toPosX, toPosY)) {
-                    availableMoves.push({x: toPosX, y: toPosY});
-                    break;
-                }
-                if (!this.canMove(toPosX, toPosY)) {
-                    break;
-                }
-                availableMoves.push({x: toPosX, y: toPosY});
+            const toPosX = this.posX + direction['x'];
+            const toPosY = this.posY + direction['y'];
+            if (!this.isMoveLegal(toPosX, toPosY)) {
+                continue;
             }
+            if (this.isOppositePiece(toPosX, toPosY)) {
+                availableMoves.push({x: toPosX, y: toPosY});
+                continue;
+            }
+            if (!this.canMove(toPosX, toPosY)) {
+                continue;
+            }
+            availableMoves.push({x: toPosX, y: toPosY});
         }
         return availableMoves;
     }
@@ -79,4 +77,4 @@ function mapStateToProps(state, ownProps) {
     return {board: state.game.board};
 }
 
-export default connect(mapStateToProps, actions)(LightQueen)
+export default connect(mapStateToProps, actions)(LightKnight)
