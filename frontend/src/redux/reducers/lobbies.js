@@ -1,15 +1,15 @@
-import {OPEN_CREATE_LOBBY_ACTION, CREATE_NEW_LOBBY_ACTION} from "../actions/lobbies";
+import {OPEN_CREATE_LOBBY_ACTION, CREATE_NEW_LOBBY_ACTION, GET_LOBBIES_ACTION} from "../actions/lobbies";
 
 const initialState = {
     isCreateLobbyModalOpen: false,
-    lobbies: []
+    lobbyIdToLobby: {}
 };
 
 
 export function lobbies(state=initialState, action) {
     let newState = {
         ...state,
-        ...state.lobbies
+        ...state.lobbyIdToLobby
     };
 
     switch(action.type) {
@@ -18,7 +18,11 @@ export function lobbies(state=initialState, action) {
             return newState;
 
         case CREATE_NEW_LOBBY_ACTION:
-            newState.lobbies.push(action.lobbyData);
+            newState.lobbyIdToLobby[action.lobbyId] = action.lobbyData;
+            return newState;
+
+        case GET_LOBBIES_ACTION:
+            newState.lobbyIdToLobby = action.lobbyIdToLobby;
             return newState;
 
         default:

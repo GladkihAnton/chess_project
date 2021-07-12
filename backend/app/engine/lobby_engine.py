@@ -31,10 +31,10 @@ class LobbyEngine:
 
         msg: WSMessage
 
-        async def test():
+        async def send_lobby_to_subscribers():
             for _ws in chess_app['websocket_lobbies']:
-                await _ws.send_json({'type': 'new_lobby', 'lobby_data': result.to_dict()})
+                await _ws.send_json({'type': 'new_lobby', 'lobby_id': result.lobby_id, 'lobby_data': result.to_dict()})
 
-        asyncio.create_task(test())
+        asyncio.create_task(send_lobby_to_subscribers())
 
         return result

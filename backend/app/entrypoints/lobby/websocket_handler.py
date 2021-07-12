@@ -1,7 +1,4 @@
-from typing import Optional
-from aiohttp.web import Request
-
-from aiohttp.web import View, WebSocketResponse
+from aiohttp.web import View, WebSocketResponse, Response
 from aiohttp import WSMsgType, WSMessage
 
 
@@ -10,6 +7,10 @@ class WebsocketLobbyHandler(View):
     async def get(self):
         ws = WebSocketResponse()
         await ws.prepare(self.request)
+
+        await ws.send_json({'type': 'lobbies',
+                            'lobby_id_to_lobby': {lobby_id: lobby.to_dict() for lobby_id, lobby
+                                                  in self.request.app['lobby_id_to_lobby'].items()}})
 
         _ws: WebSocketResponse
         for _ws in self.request.app['websocket_lobbies']:
@@ -32,4 +33,5 @@ class WebsocketLobbyHandler(View):
         self.request.app['websocket_lobbies'].remove(ws)
         for _ws in self.request.app['websocket_lobbies']:
             await _ws.send_str('disconected')
-        # log.debug('websocket connection closed')
+
+        return Response(text='websocket close', status=200)

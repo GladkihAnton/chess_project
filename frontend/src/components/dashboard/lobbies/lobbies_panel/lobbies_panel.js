@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 import style from './lobbies_panel.module.css';
 import configFile from "../../../../config.json";
 import Modal from 'react-modal';
-import {toggleCreateLobbyModal, createNewLobby} from "../../../../redux/actions/lobbies";
+import {toggleCreateLobbyModal, createNewLobby, getLobbies} from "../../../../redux/actions/lobbies";
 import request from "../../../../utils/request";
 import Lobby from "../lobby/lobby";
 
@@ -25,7 +25,7 @@ class LobbiesPanel extends Component {
             <div>
                 <button onClick={this.props.toggleCreateLobbyModal.bind(this, true)}>create new lobby</button>
                 <div className={style.panel}>
-                    {this.prepareLobbyList(this.props.lobbies)}
+                    {this.prepareLobbyList(this.props.lobbyIdToLobby)}
                 </div>
                 <div>
                     <Modal
@@ -81,7 +81,10 @@ class LobbiesPanel extends Component {
             const data = JSON.parse(message.data);
             switch(data.type) {
                 case 'new_lobby':
-                    this.props.createNewLobby(data.lobby_data);
+                    this.props.createNewLobby(data.lobby_data, data.lobby_id);
+                    break;
+                case 'lobbies':
+                    this.props.getLobbies(data.lobby_id_to_lobby);
                     break;
                 default:
                     break;
@@ -95,14 +98,18 @@ class LobbiesPanel extends Component {
         };
     }
 
-    prepareLobbyList(lobbies) {
+    prepareLobbyList(lobbyIdToLobby) {
         let yourLobbies = [];
         let commonLobbies = [];
-        for (let lobby of lobbies) {
+        for (let lobbyId in lobbyIdToLobby) {
+            if (!lobbyIdToLobby.hasOwnProperty(lobbyId)) {
+                continue;
+            }
+
+            let lobby = lobbyIdToLobby[lobbyId];
             commonLobbies.push(<Lobby key={lobby.lobby_id} lobby_id={lobby.lobby_id} lobbyName={lobby.lobby_name} nextMove={lobby.next_move}
                            whiteRemainingTs={lobby.white_remaining_ts} blackRemainingTs={lobby.black_remaining_ts}/>)
         }
-        console.log(lobbies);
 
         return commonLobbies;
     }
@@ -121,11 +128,11 @@ class LobbiesPanel extends Component {
 function  mapStateToProps(state, ownProps) {
     return {
         isCreateLobbyModalOpen: state.lobbies.isCreateLobbyModalOpen,
-        lobbies: state.lobbies.lobbies
+        lobbyIdToLobby: state.lobbies.lobbyIdToLobby
     };
 }
 
-const actions = {toggleCreateLobbyModal, createNewLobby}
+const actions = {toggleCreateLobbyModal, createNewLobby, getLobbies}
 
 export default connect(
     mapStateToProps, actions
