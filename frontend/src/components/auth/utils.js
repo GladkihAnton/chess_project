@@ -1,16 +1,22 @@
 import store from "../../redux/store";
-import {updateAuthentication} from "../../redux/actions/auth";
+import {updateAuthentication, updatePlayerId} from "../../redux/actions/auth";
 
 export function doLogin(accessToken) {
-    localStorage.setItem('expiresAt', _parseJwt(accessToken)['exp']);
+    const parsedToken = _parseJwt(accessToken);
+
+    localStorage.setItem('expiresAt', parsedToken['exp']);
     localStorage.setItem('accessToken', accessToken);
+
     store.dispatch(updateAuthentication(true));
+    store.dispatch(updatePlayerId(parsedToken['player_id']));
 }
 
 export function doLogout() {
     localStorage.removeItem('expiresAt');
     localStorage.removeItem('accessToken');
+
     store.dispatch(updateAuthentication(false));
+    store.dispatch(updatePlayerId(null));
 }
 
 function _parseJwt(token) {

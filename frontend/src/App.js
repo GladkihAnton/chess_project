@@ -24,8 +24,8 @@ class App extends Component {
                     {this.props.isAuthenticate &&
                             <div className={style.main}>
                                 <a href='#' onClick={doLogout}>Logout</a>
-                                <Route path='/game' component={() => <Board/>}/>
-                                <Route path='/dashboard' component={() => <Dashboard/>}/>
+                                <Route path='/game' component={Board}/>
+                                <Route path='/dashboard' component={Dashboard}/>
                                 <Route path='*' component={() => <Redirect to="/dashboard"/>}/>
                                 {/*<Route exact path='/auth/login' component={() => <Login/>}/>*/}
                                 {/*<Route path='/signup' render={() => true ? (<Redirect to="/"/> ) : (<Register/>)}/>*/}
@@ -33,8 +33,8 @@ class App extends Component {
                     }
                     {!this.props.isAuthenticate &&
                         <div>
-                            <Route path='/auth/login' component={() => <Login/>}/>
-                            <Route path='/auth/signup' component={() => <Register/>}/>
+                            <Route path='/auth/login' component={Login}/>
+                            <Route path='/auth/signup' component={Register}/>
                             <Route path='*' component={() => <Redirect to="/auth/login"/>}/>
                         </div>
                     }
@@ -44,7 +44,7 @@ class App extends Component {
     }
 }
 
-function  mapStateToProps(state, ownProps) {
+function mapStateToProps(state, ownProps) {
     return {
         isAuthenticate: state.auth.isAuthenticate,
     };

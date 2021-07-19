@@ -1,34 +1,29 @@
 import {Component} from "react";
-import kingLogo from '../../../../../images/chess_figures/light_king.png'
+import lightKingLogo from '../../../../../images/chess_figures/light_king.png'
+import darkKingLogo from '../../../../../images/chess_figures/dark_king.png'
 import style from './king.module.css'
 import {ChoosePiece} from "../../../../../redux/actions/game";
 import {connect} from "react-redux";
+import {canMove, checkCheckAfterMove, isMoveLegal, isOppositePiece, tryChoosePiece} from "../utils";
 
 
-class LightKing extends Component {
+class King extends Component {
 
     constructor(props) {
         super(props);
         this.posX = props.posX;
         this.posY = props.posY;
         this.board = props.board;
+        this.color = props.color;
+        this.stepNumber = props.stepNumber;
+        this.piece = props.piece;
     }
 
     render() {
         return (
             <button className={style.clickable_cell}
-                    onClick={
-                        this.props.ChoosePiece
-                            .bind(this,
-                                this.availableMoves.bind(this),
-                                {
-                                    posX: this.posX,
-                                    posY: this.posY,
-                                    piece: this.props.board[this.posY][this.posX]
-                                }
-                            )
-                    }>
-                <img className={style.logo} src={kingLogo}/>
+                    onClick={tryChoosePiece.bind(this)}>
+                <img className={style.logo} src={this.color === 'black' ? darkKingLogo : lightKingLogo}/>
             </button>
         )
     }
@@ -41,40 +36,32 @@ class LightKing extends Component {
         for (let direction of allDirections) {
             const toPosX = this.posX + direction['x'];
             const toPosY = this.posY + direction['y'];
-            if (!this.isMoveLegal(toPosX, toPosY)) {
+            if (!isMoveLegal.call(this, toPosX, toPosY)) {
                 continue;
             }
-            if (this.isOppositePiece(toPosX, toPosY)) {
+            if (isOppositePiece.call(this, toPosX, toPosY) && !checkCheckAfterMove.call(this, this.color, toPosX, toPosY)) {
                 availableMoves.push({x: toPosX, y: toPosY});
                 continue;
             }
-            if (!this.canMove(toPosX, toPosY)) {
+            if (!canMove(this.board, toPosX, toPosY)) {
                 continue;
+            }
+            if (checkCheckAfterMove.call(this, this.color, toPosX, toPosY)) {
+                    continue;
             }
             availableMoves.push({x: toPosX, y: toPosY});
         }
         return availableMoves;
-    }
-
-    isMoveLegal(toPosX, toPosY) {
-        return 0 <= toPosX && toPosX <= 7 && 0 <= toPosY && toPosY <= 7;
-    }
-
-    canMove(toPosX, toPosY) {
-        return this.board[toPosY][toPosX] === '';
-    }
-
-    isOppositePiece(toPosX, toPosY) {
-        return this.board[toPosY][toPosX] &&
-            this.board[this.posY][this.posX] === this.board[this.posY][this.posX].toUpperCase() ^
-            this.board[toPosY][toPosX] === this.board[toPosY][toPosX].toUpperCase();
     }
 }
 
 const actions = {ChoosePiece}
 
 function mapStateToProps(state, ownProps) {
-    return {board: state.game.board};
+    return {
+        board: state.game.board,
+        stepNumber: state.game.stepNumber
+    };
 }
 
-export default connect(mapStateToProps, actions)(LightKing)
+export default connect(mapStateToProps, actions)(King)

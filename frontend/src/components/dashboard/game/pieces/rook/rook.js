@@ -1,33 +1,28 @@
 import {Component} from "react";
 import style from "./rook.module.css";
-import rookLogo from "../../../../../images/chess_figures/light_rook.png";
+import lightRookLogo from "../../../../../images/chess_figures/light_rook.png";
+import darkRookLogo from "../../../../../images/chess_figures/dark_rook.png";
 import {ChoosePiece} from "../../../../../redux/actions/game";
 import {connect} from "react-redux";
+import {canMove, checkCheckAfterMove, isMoveLegal, isOppositePiece, tryChoosePiece} from "../utils";
 
-class LightRook extends Component {
+class Rook extends Component {
 
     constructor(props) {
         super(props);
         this.posX = props.posX;
         this.posY = props.posY;
         this.board = props.board;
+        this.color = props.color;
+        this.stepNumber = props.stepNumber;
+        this.piece = props.piece;
     }
 
     render() {
         return (
             <button className={style.clickable_cell}
-                    onClick={
-                        this.props.ChoosePiece
-                            .bind(this,
-                                this.availableMoves.bind(this),
-                                {
-                                    posX: this.posX,
-                                    posY: this.posY,
-                                    piece: this.props.board[this.posY][this.posX]
-                                }
-                            )
-                    }>
-                <img className={style.logo} src={rookLogo}/>
+                    onClick={tryChoosePiece.bind(this)}>
+                <img className={style.logo} src={this.color === 'black' ? darkRookLogo : lightRookLogo}/>
             </button>
         )
     }
@@ -40,15 +35,18 @@ class LightRook extends Component {
             for (let moveDist = 1; moveDist < 8; moveDist++) {
                 const toPosX = this.posX + direction['x'] * moveDist;
                 const toPosY = this.posY + direction['y'] * moveDist;
-                if (!this.isMoveLegal(toPosX, toPosY)) {
+                if (!isMoveLegal.call(this, toPosX, toPosY)) {
                     break;
                 }
-                if (this.isOppositePiece(toPosX, toPosY)) {
+                if (isOppositePiece.call(this, toPosX, toPosY) && !checkCheckAfterMove.call(this, this.color, toPosX, toPosY)) {
                     availableMoves.push({x: toPosX, y: toPosY});
                     break;
                 }
-                if (!this.canMove(toPosX, toPosY)) {
+                if (!canMove(this.board, toPosX, toPosY)) {
                     break;
+                }
+                if (checkCheckAfterMove.call(this, this.color, toPosX, toPosY)) {
+                    continue;
                 }
                 availableMoves.push({x: toPosX, y: toPosY});
             }
@@ -56,25 +54,15 @@ class LightRook extends Component {
         return availableMoves;
     }
 
-    isMoveLegal(toPosX, toPosY) {
-        return 0 <= toPosX && toPosX <= 7 && 0 <= toPosY && toPosY <= 7;
-    }
-
-    canMove(toPosX, toPosY) {
-        return this.board[toPosY][toPosX] === '';
-    }
-
-    isOppositePiece(toPosX, toPosY) {
-        return this.board[toPosY][toPosX] &&
-            this.board[this.posY][this.posX] === this.board[this.posY][this.posX].toUpperCase() ^
-            this.board[toPosY][toPosX] === this.board[toPosY][toPosX].toUpperCase();
-    }
 }
 
 const actions = {ChoosePiece}
 
 function mapStateToProps(state, ownProps) {
-    return {board: state.game.board};
+    return {
+        board: state.game.board,
+        stepNumber: state.game.stepNumber
+    };
 }
 
-export default connect(mapStateToProps, actions)(LightRook)
+export default connect(mapStateToProps, actions)(Rook)

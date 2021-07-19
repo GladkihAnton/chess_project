@@ -1,9 +1,10 @@
 import {CHOOSE_PIECE_ACTION, MOVE_PIECE_ACTION} from "../actions/game";
+import request from "../../utils/request";
 
 
 const initialState = {
     board: [
-        ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+        ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
         ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
         ['', '', '', '', '', '', '', ''],
         ['', '', '', '', '', '', '', ''],
@@ -23,8 +24,10 @@ const initialState = {
         ['', '', '', '', '', '', '', '']
     ],
     chosenPiece: null,
-    isWhiteMove: true,
-    twoSqrMoveLine: null
+    stepNumber: 1,
+    twoSqrMoveLine: null,
+    whitePlayerId: null,
+    blackPlayerId: null
 };
 
 export function game(state=initialState, action) {
@@ -54,14 +57,18 @@ export function game(state=initialState, action) {
         }
 
         case MOVE_PIECE_ACTION: {
-            const toPosX = action.posX;
-            const toPosY = action.posY;
-            const fromPosX = state.chosenPiece.posX;
-            const fromPosY = state.chosenPiece.posY;
+            const toPosX = action.toPosX;
+            const toPosY = action.toPosY;
+            const fromPosX = action.fromPosX;
+            const fromPosY = action.fromPosY;
+
+            newState.board[toPosY][toPosX] = state.board[fromPosY][fromPosX];
             newState.board[fromPosY][fromPosX] = '';
-            newState.board[toPosY][toPosX] = state.chosenPiece.piece;
+
             newState.twoSqrMoveLine = Math.abs(fromPosY - toPosY) === 2 ? toPosX : null;
             newState.chosenPiece = null;
+            newState.stepNumber += 1;
+
             return newState;
         }
 

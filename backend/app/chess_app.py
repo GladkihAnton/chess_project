@@ -5,6 +5,7 @@ from typing import List, Dict
 from aiohttp import web
 from aiohttp_middlewares import cors_middleware, error_middleware
 
+from app.entrypoints.game.websocket_handler import WebsocketGameHandler
 from app.entrypoints.lobby.handler import CreateLobbyRequestHandler
 from app.entrypoints.lobby.websocket_handler import WebsocketLobbyHandler
 from app.entrypoints.profile.hanlder import ProfileRequestHandler
@@ -23,11 +24,12 @@ def make_app() -> web.Application:
             authenticate_middleware
         ])
     chess_app['access_token_salt'] = 'password_salt'  # todo get it from env.file
-    chess_app['websocket_lobbies']: List[web.WebSocketResponse] = []
+    chess_app['websocket_lobbies_subs']: List[web.WebSocketResponse] = []
     chess_app['lobby_id_to_lobby']: Dict[str, Lobby] = {}
 
     chess_app.router.add_get('/get-session-data', ProfileRequestHandler)
     chess_app.router.add_get('/ws/lobby', WebsocketLobbyHandler)
+    chess_app.router.add_get('/ws/game', WebsocketGameHandler)
     chess_app.router.add_post('/lobbies/create-lobby', CreateLobbyRequestHandler)
 
     auth_app = web.Application(

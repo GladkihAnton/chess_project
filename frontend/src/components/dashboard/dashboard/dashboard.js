@@ -14,12 +14,9 @@ class Dashboard extends Component {
     render() {
         return (
             <div className={style.dashboard}>
-                <LobbiesPanel/>
+                <LobbiesPanel match={this.props.match}/>
             </div>
         )
-    }
-
-    sendMessage() {
     }
 }
 

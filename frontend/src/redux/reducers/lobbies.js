@@ -1,8 +1,14 @@
-import {OPEN_CREATE_LOBBY_ACTION, CREATE_NEW_LOBBY_ACTION, GET_LOBBIES_ACTION} from "../actions/lobbies";
+import {
+    OPEN_CREATE_LOBBY_ACTION,
+    CREATE_NEW_LOBBY_ACTION,
+    GET_LOBBIES_ACTION,
+    CHOOSE_LOBBY_ACTION
+} from "../actions/lobbies";
 
 const initialState = {
     isCreateLobbyModalOpen: false,
-    lobbyIdToLobby: {}
+    lobbyIdToLobby: {},
+    chosenLobby: null
 };
 
 
@@ -23,6 +29,10 @@ export function lobbies(state=initialState, action) {
 
         case GET_LOBBIES_ACTION:
             newState.lobbyIdToLobby = action.lobbyIdToLobby;
+            return newState;
+
+        case CHOOSE_LOBBY_ACTION:
+            newState.chosenLobby = action.lobbyId;
             return newState;
 
         default:

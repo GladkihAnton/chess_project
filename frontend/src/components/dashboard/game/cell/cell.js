@@ -1,14 +1,12 @@
 import {Component} from "react";
 import {connect} from 'react-redux';
 import style from './cell.module.css'
-import {movePiece} from "../../../../redux/actions/game";
-import DarkPawn from '../pieces/pawn/dark_pawn'
-import LightPawn from '../pieces/pawn/light_pawn'
-import LightBishop from "../pieces/bishop/bishop";
-import LightRook from "../pieces/rook/rook";
-import LightKnight from "../pieces/knight/knight";
-import LightQueen from "../pieces/queen/queen";
-import LightKing from "../pieces/king/king";
+import Pawn from '../pieces/pawn/pawn'
+import Bishop from "../pieces/bishop/bishop";
+import Rook from "../pieces/rook/rook";
+import Knight from "../pieces/knight/knight";
+import Queen from "../pieces/queen/queen";
+import King from "../pieces/king/king";
 
 
 class Cell extends Component {
@@ -17,50 +15,54 @@ class Cell extends Component {
         this.piece = props.piece;
         this.posY = this.props.posY;
         this.posX = this.props.posX;
-
     }
     // todo cell -> square
     prepareCell() {
-        const isDarkCell = (this.posX+this.posY) % 2 !== 0;
+        const isDarkCell = (this.posX + this.posY) % 2 !== 0;
         const cellClasses = `${style.cell} ${isDarkCell ? style.dark_cell : style.light_cell}`;
         return (
             <a type='button' className={cellClasses}>
                 {this.getPiece()}
-                {this.props.canMove && <button onClick={this.props.movePiece.bind(this, this.posX, this.posY)} className={style.move}></button>}
+                {this.props.canMove && <button onClick={this.tryMovePiece.bind(this)}
+                                               className={style.move}></button>}
             </a>
         );
     }
 
-    getPiece() {
-        switch (this.piece) {
-            case 'P':
-                return <LightPawn posX={this.posX} posY={this.posY}/>
-            case 'p':
-                return <DarkPawn posX={this.posX} posY={this.posY}/>
-            case 'B':
-                return <LightBishop posX={this.posX} posY={this.posY}/>
-            case 'b':
-                return <LightPawn posX={this.posX} posY={this.posY}/>
-            case 'R':
-                return <LightRook posX={this.posX} posY={this.posY}/>
-            case 'r':
-                return <LightPawn posX={this.posX} posY={this.posY}/>
-            case 'N':
-                return <LightKnight posX={this.posX} posY={this.posY}/>
-            case 'n':
-                return <LightPawn posX={this.posX} posY={this.posY}/>
-            case 'Q':
-                return <LightQueen posX={this.posX} posY={this.posY}/>
-            case 'q':
-                return <LightPawn posX={this.posX} posY={this.posY}/>
-            case 'K':
-                return <LightKing posX={this.posX} posY={this.posY}/>
-            case 'k':
-                return <LightPawn posX={this.posX} posY={this.posY}/>
-
-        }
+    tryMovePiece() {
+        this.props.movePiece(this.posX, this.posY)
     }
 
+    getPiece() {
+        switch(this.piece) {
+            case 'P':
+                return <Pawn posX={this.posX} posY={this.posY} piece={this.piece} color='white'/>
+            case 'p':
+                return <Pawn posX={this.posX} posY={this.posY} piece={this.piece} color='black'/>
+            case 'B':
+                return <Bishop posX={this.posX} posY={this.posY} piece={this.piece} color='white'/>
+            case 'b':
+                return <Bishop posX={this.posX} posY={this.posY} piece={this.piece} color='black'/>
+            case 'R':
+                return <Rook posX={this.posX} posY={this.posY} piece={this.piece} color='white'/>
+            case 'r':
+                return <Rook posX={this.posX} posY={this.posY} piece={this.piece} color='black'/>
+            case 'N':
+                return <Knight posX={this.posX} posY={this.posY} piece={this.piece} color='white'/>
+            case 'n':
+                return <Knight posX={this.posX} posY={this.posY} piece={this.piece} color='black'/>
+            case 'Q':
+                return <Queen posX={this.posX} posY={this.posY} piece={this.piece} color='white'/>
+            case 'q':
+                return <Queen posX={this.posX} posY={this.posY} piece={this.piece} color='black'/>
+            case 'K':
+                return <King posX={this.posX} posY={this.posY} piece={this.piece} color='white'/>
+            case 'k':
+                return <King posX={this.posX} posY={this.posY} piece={this.piece} color='black'/>
+            default:
+                break;
+        }
+    }
 
     render() {
         return (
@@ -69,8 +71,4 @@ class Cell extends Component {
     }
 }
 
-const actions = {
-    movePiece
-}
-
-export default connect(null, actions)(Cell)
+export default connect(null, null)(Cell)

@@ -7,6 +7,8 @@ import Modal from 'react-modal';
 import {toggleCreateLobbyModal, createNewLobby, getLobbies} from "../../../../redux/actions/lobbies";
 import request from "../../../../utils/request";
 import Lobby from "../lobby/lobby";
+import {Route, Switch} from "react-router-dom";
+import Board from "../../game/board/board";
 
 
 class LobbiesPanel extends Component {
@@ -15,7 +17,7 @@ class LobbiesPanel extends Component {
         super(props);
         this.isCreateLobbyModalOpen = this.props.isCreateLobbyModalOpen;
         this.lobbyName = React.createRef();
-
+        this.pieceColor = React.createRef();
         this.client = new WebSocket(`ws://${configFile.SERVER_URL}/ws/lobby`); // todo put access_token and delete url from white list
         this.websocketHandling();
     }
@@ -40,6 +42,10 @@ class LobbiesPanel extends Component {
                         <h2>Создание лобби</h2>
                         <form>
                             <p><input id='lobby_name' name='lobby_name' ref={this.lobbyName}/></p>
+                            <p><select id='piece_color' name='piece_color' ref={this.pieceColor}>
+                                <option value='white'>Белые</option>
+                                <option value='black'>Черные</option>
+                            </select></p>
                             <p>
                                 <button onClick={this.props.toggleCreateLobbyModal.bind(this, false)}>close</button>
                                 <button type='button' onClick={this.createLobby.bind(this)}>save</button>
@@ -47,6 +53,9 @@ class LobbiesPanel extends Component {
                         </form>
                     </Modal>
                 </div>
+                <Switch>
+                    <Route path={`${this.props.match.path}/:gameId`} component={() => <Board key={this.props.chosenLobby}/>}/>
+                </Switch>
             </div>
         )
     }
@@ -55,6 +64,7 @@ class LobbiesPanel extends Component {
         request.post('/lobbies/create-lobby',
             {
                 lobby_name: this.lobbyName.current.value,
+                piece_color: this.pieceColor.current.value
             },
             {}
         )
@@ -88,7 +98,7 @@ class LobbiesPanel extends Component {
                     break;
                 default:
                     break;
-          }
+            }
         };
         this.client.onclose = (message) => {
           console.log(message);
@@ -107,8 +117,9 @@ class LobbiesPanel extends Component {
             }
 
             let lobby = lobbyIdToLobby[lobbyId];
-            commonLobbies.push(<Lobby key={lobby.lobby_id} lobby_id={lobby.lobby_id} lobbyName={lobby.lobby_name} nextMove={lobby.next_move}
-                           whiteRemainingTs={lobby.white_remaining_ts} blackRemainingTs={lobby.black_remaining_ts}/>)
+            commonLobbies.push(<Lobby key={lobby.lobby_id} lobbyId={lobby.lobby_id} lobbyName={lobby.lobby_name} nextMove={lobby.next_move}
+                           whiteRemainingTs={lobby.white_remaining_ts} blackRemainingTs={lobby.black_remaining_ts}
+                           match={this.props.match}/>)
         }
 
         return commonLobbies;
@@ -128,7 +139,8 @@ class LobbiesPanel extends Component {
 function  mapStateToProps(state, ownProps) {
     return {
         isCreateLobbyModalOpen: state.lobbies.isCreateLobbyModalOpen,
-        lobbyIdToLobby: state.lobbies.lobbyIdToLobby
+        lobbyIdToLobby: state.lobbies.lobbyIdToLobby,
+        chosenLobby: state.lobbies.chosenLobby
     };
 }
 

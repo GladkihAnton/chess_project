@@ -10,4 +10,6 @@ function configureStore() {
 }
 let store = configureStore();
 
+export function getPlayerId() {return store.getState().auth.playerId}
+
 export default store

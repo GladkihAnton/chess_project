@@ -1,6 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Optional, List
+
+from aiohttp.web import WebSocketResponse
+
+if TYPE_CHECKING:
+    from app.model.game import Game
 
 
 class Lobby:
@@ -41,6 +47,14 @@ class Lobby:
         self._dto.next_move = next_move
 
     @property
+    def game(self):
+        return self._dto.game
+
+    @game.setter
+    def game(self, game: str):
+        self._dto.game = game
+
+    @property
     def white_remaining_ts(self):
         return self._dto.white_remaining_ts
 
@@ -56,6 +70,16 @@ class Lobby:
     def black_remaining_ts(self, black_remaining_ts: int):
         self._dto.black_remaining_ts = black_remaining_ts
 
+    @property
+    def websocket_subscribers(self):
+        return self._dto.websocket_subscribers
+
+    def add_websocket_subscriber(self, ws: WebSocketResponse):
+        self._dto.websocket_subscribers.append(ws)
+
+    def remove_websocket_subscriber(self, ws: WebSocketResponse):
+        self._dto.websocket_subscribers.remove(ws)
+
     def to_dict(self):
         return {
             'lobby_id': self.lobby_id,
@@ -70,7 +94,8 @@ class Lobby:
 class LobbyDto:
     lobby_id: str
     lobby_name: str
-    # current_position: list
     white_remaining_ts: int
     black_remaining_ts: int
     next_move: str
+    game: Optional[Game] = None
+    websocket_subscribers: List[WebSocketResponse] = field(default_factory=list)
