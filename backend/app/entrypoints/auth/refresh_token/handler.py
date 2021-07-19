@@ -6,12 +6,13 @@ from sqlalchemy import sql, select, Table
 from sqlalchemy.engine import LegacyRow
 
 from app import db
+from app.web import BaseView
 from app.config import JWT_SECRET, JWT_ALGORITHM
 from app.engine.player_engine import PlayerEngine
 from app.entrypoints.auth.helper import do_login
 
 
-class RefreshTokenRequestHandler(web.View):
+class RefreshTokenRequestHandler(BaseView):
     PLAYER_T = 'player'
     TOKEN_HEADER = {
       "alg": "HS256",

@@ -1,7 +1,9 @@
-from aiohttp.web import View, Response, Request, json_response
+from aiohttp.web import Response, json_response
+
+from app.web import BaseView
 
 
-class ProfileRequestHandler(View):
+class ProfileRequestHandler(BaseView):
 
     async def get(self) -> Response:
         return json_response({'result': 'ok'})

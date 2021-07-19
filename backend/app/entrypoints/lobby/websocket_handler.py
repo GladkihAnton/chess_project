@@ -1,8 +1,10 @@
-from aiohttp.web import View, WebSocketResponse, Response
+from aiohttp.web import WebSocketResponse, Response
 from aiohttp import WSMsgType, WSMessage
 
+from app.web import BaseView
 
-class WebsocketLobbyHandler(View):
+
+class WebsocketLobbyHandler(BaseView):
 
     async def get(self):
         ws = WebSocketResponse()
@@ -12,10 +14,10 @@ class WebsocketLobbyHandler(View):
             'type': 'lobbies',
             'lobby_id_to_lobby': {
                 lobby_id: lobby.to_dict() for lobby_id, lobby
-                in self.request.app['lobby_id_to_lobby'].items()
+                in self.request.app.lobby_id_to_lobby.items()
             }})
 
-        self.request.app['websocket_lobbies_subs'].append(ws)
+        self.request.app.websocket_lobbies_subs.append(ws)
 
         msg: WSMessage
         async for msg in ws:
@@ -25,12 +27,12 @@ class WebsocketLobbyHandler(View):
                 else:
                     # print(msg)
                     # pass
-                    for _ws in self.request.app['websocket_lobbies_subs']:
+                    for _ws in self.request.app.websocket_lobbies_subs:
                         await _ws.send_json({'asd': 'asd'})
             elif msg.type == WSMsgType.error:
                 print(msg)
 
-        self.request.app['websocket_lobbies_subs'].remove(ws)
+        self.request.app.websocket_lobbies_subs.remove(ws)
 
         # for _ws in self.request.app['websocket_lobbies_subs']:
         #     await _ws.send_str('disconected')

@@ -97,5 +97,9 @@ class LobbyDto:
     white_remaining_ts: int
     black_remaining_ts: int
     next_move: str
+
+    white_player_id: str = None
+    black_player_id: str = None
     game: Optional[Game] = None
+
     websocket_subscribers: List[WebSocketResponse] = field(default_factory=list)

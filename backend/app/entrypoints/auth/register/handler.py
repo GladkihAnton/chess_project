@@ -3,12 +3,13 @@ from typing import Dict
 
 from aiohttp import web
 
+from app.web import BaseView
 from app.utils import hash_password
 from app.entrypoints.auth.helper import do_login
 from app.engine.player_engine import PlayerEngine, UserDoesNotExist
 
 
-class RegisterRequestHandler(web.View):
+class RegisterRequestHandler(BaseView):
     PLAYER_T = 'player'
 
     async def post(self) -> web.Response:

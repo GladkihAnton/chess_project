@@ -61,8 +61,9 @@ class LobbiesPanel extends Component {
     }
 
     createLobby(e) {
-        request.post('/lobbies/create-lobby',
+        request.post('/lobbies/lobby',
             {
+                event: 'new_lobby',
                 lobby_name: this.lobbyName.current.value,
                 piece_color: this.pieceColor.current.value
             },
@@ -119,6 +120,7 @@ class LobbiesPanel extends Component {
             let lobby = lobbyIdToLobby[lobbyId];
             commonLobbies.push(<Lobby key={lobby.lobby_id} lobbyId={lobby.lobby_id} lobbyName={lobby.lobby_name} nextMove={lobby.next_move}
                            whiteRemainingTs={lobby.white_remaining_ts} blackRemainingTs={lobby.black_remaining_ts}
+                           whitePlayerId={lobby.white_player_id} blackPlayerId={lobby.black_player_id}
                            match={this.props.match}/>)
         }
 

@@ -2,13 +2,14 @@ from typing import Dict
 
 from aiohttp import web
 
+from app.web import BaseView
 from app.utils import hash_password
 from app.model.player import Player
 from app.entrypoints.auth.helper import do_login
 from app.engine.player_engine import PlayerEngine, UserDoesNotExist
 
 
-class LoginRequestHandler(web.View):
+class LoginRequestHandler(BaseView):
     PLAYER_T = 'player'
     JWT_TOKEN_T = 'jwt_token'
 
