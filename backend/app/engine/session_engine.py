@@ -17,7 +17,7 @@ class SessionEngine:
 
         chess_app.session_id_to_session[result.session_id] = result
 
-        # сделать в другом потоке
+        # todo сделать в другом потоке
         result.store()
 
         return result

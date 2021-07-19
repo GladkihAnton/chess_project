@@ -1,0 +1,29 @@
+.panel {
+    width: 100%;
+    border: 1px solid gray;
+    height: 80vh;
+    overflow: scroll;
+}
+
+.create_lobby_modal {
+    left: 25%;
+}
+
+.create_lobby_modal {
+    position: absolute;
+    inset: 40px;
+    border: 1px solid rgb(204, 204, 204);
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    border-radius: 4px;
+    outline: none;
+    padding: 20px;
+    width: 50%;
+    left: 25%;
+}
+
+.overlay_create_lobby_modal {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.75);
+}

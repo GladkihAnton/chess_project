@@ -7,6 +7,7 @@ from sqlalchemy.engine import LegacyRow
 
 from app import db
 from app.config import JWT_SECRET, JWT_ALGORITHM
+from app.engine.player_engine import PlayerEngine
 from app.entrypoints.auth.helper import do_login
 
 
@@ -41,15 +42,7 @@ class RefreshTokenRequestHandler(web.View):
         if not self._compare_tokens_with_db(player_id, access_token, refresh_token):
             return web.json_response({'error': 'token_is_invalid'})
 
-        return do_login(self._get_player(player_id))
-
-    @staticmethod
-    def _get_player(player_id: str) -> LegacyRow:
-        player_t: Table = db.get_table(RefreshTokenRequestHandler.PLAYER_T)
-        query: sql.Select = select([player_t]).where(player_t.c.id == player_id)
-        with db.get_connection() as conn:
-            player: LegacyRow = conn.execute(query).fetchone()
-        return player
+        return do_login(PlayerEngine.load_player_by_id(player_id))
 
     @staticmethod
     def _compare_tokens_with_db(player_id: str, access_token: str, refresh_token: str) -> bool:

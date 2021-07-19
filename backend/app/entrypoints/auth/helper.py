@@ -6,21 +6,21 @@ import jwt
 from aiohttp import web
 from sqlalchemy import Table, sql
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.engine import LegacyRow
 
 from app import db
+from app.model.player import Player
 from app.config import JWT_SECRET, JWT_EXP_DELTA_SECONDS, JWT_ALGORITHM
 
 JWT_TOKEN_T = 'jwt_token'
 
 
-def do_login(player: LegacyRow) -> web.Response:
+def do_login(player: Player) -> web.Response:
 
     now_ts = int(datetime.now().timestamp())
 
     access_token = jwt.encode(payload={
         'exp': now_ts + JWT_EXP_DELTA_SECONDS,
-        'player_id': player.id.hex
+        'player_id': player.player_id
     }, key=JWT_SECRET, algorithm=JWT_ALGORITHM)
 
     last_six_letters = slice(len(access_token) - 6, len(access_token))
@@ -32,7 +32,7 @@ def do_login(player: LegacyRow) -> web.Response:
         'refresh_token': refresh_token,
         'access_token': access_token,
         'now_ts': now_ts,
-        'player_id': player.id
+        'player_id': player.player_id
     })
     return response
 
@@ -47,7 +47,7 @@ def _store_auth_tokens(data: Dict[str, Union[str, uuid.UUID]]) -> None:
 
     query: sql.Insert = insert(jwt_token_t) \
         .values(
-            player_id=data.get('player_id').hex,
+            player_id=data.get('player_id'),
             **data_to_store) \
         .on_conflict_do_update(
             index_elements=['player_id'],

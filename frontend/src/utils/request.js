@@ -5,7 +5,7 @@ import store from "../redux/store";
 import {updateTokenRefreshing} from "../redux/actions/auth";
 
 const config = {
-    baseURL: configFile.SERVER_URL,
+    baseURL: `http://${configFile.SERVER_URL}`,
     headers: {'Authorization': `Bearer ${localStorage.getItem('accessToken')}`},
 
     withCredentials: true
@@ -17,8 +17,9 @@ request.interceptors.request.use(async (config) => {
     const expireAt = localStorage.getItem('expiresAt');
     let token = localStorage.getItem('accessToken');
     if (!store.getState().auth.isTokenRefreshing && token && expireAt - parseInt(new Date().getTime() / 1000) < 60) {
+        console.log('try refresh');
         store.dispatch(updateTokenRefreshing(true));
-        const response = await fetch(`${configFile.SERVER_URL}/auth/refresh-token`,
+        const response = await fetch(`http://${configFile.SERVER_URL}/auth/refresh-token`,
             {
                 method: 'POST',
                 body: JSON.stringify({'access_token': token}),

@@ -5,6 +5,6 @@ export function ChoosePiece(availableMovesFn, chosenPiece) {
     return {type: CHOOSE_PIECE_ACTION, availableMoves: availableMovesFn(), chosenPiece}
 }
 
-export function movePiece(posX, posY) {
-    return {type: MOVE_PIECE_ACTION, posX, posY}
+export function doMovePiece(toPosX, toPosY, fromPosX, fromPosY) {
+    return {type: MOVE_PIECE_ACTION, toPosX, toPosY, fromPosX, fromPosY}
 }

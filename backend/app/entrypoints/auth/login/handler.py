@@ -1,12 +1,11 @@
 from typing import Dict
 
 from aiohttp import web
-from sqlalchemy import sql, select, Table
-from sqlalchemy.engine import LegacyRow
 
-from app import db
 from app.utils import hash_password
+from app.model.player import Player
 from app.entrypoints.auth.helper import do_login
+from app.engine.player_engine import PlayerEngine, UserDoesNotExist
 
 
 class LoginRequestHandler(web.View):
@@ -19,7 +18,7 @@ class LoginRequestHandler(web.View):
         try:
             email: str = request_json['email']
             password: str = request_json['password']
-            player: LegacyRow = self._get_player(email)
+            player: Player = PlayerEngine.load_player_by_email(email)
             self._match_passwords(player, password)
         except UserDoesNotExist:
             return web.json_response({'error': 'user_does_not_exist'})
@@ -28,26 +27,10 @@ class LoginRequestHandler(web.View):
 
         return do_login(player)
 
-    def _get_player(self, email: str) -> LegacyRow:
-        player_t: Table = db.get_table(self.PLAYER_T)
-        query: sql.Select = select([player_t]).where(player_t.c.email == email)
-
-        with db.get_connection() as conn:
-            result = conn.execute(query).fetchone()
-
-        if not result:
-            raise UserDoesNotExist
-
-        return result
-
     @staticmethod
-    def _match_passwords(player, password):
+    def _match_passwords(player: Player, password: str):
         if hash_password(password) != player.password:
             raise PasswordsDontMatch
-
-
-class UserDoesNotExist(Exception):
-    pass
 
 
 class PasswordsDontMatch(Exception):
