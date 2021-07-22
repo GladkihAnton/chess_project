@@ -44,6 +44,9 @@ class LobbyEngine:
 
     def add_player_to_lobby(self, player):
         piece_color = None
+        if player in [self.lobby.white_player, self.lobby.black_player]:
+            return
+
         if not self.lobby.white_player:
             self.lobby.white_player = player
             piece_color = 'white'

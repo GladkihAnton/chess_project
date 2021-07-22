@@ -1,5 +1,6 @@
 import {updateAuthentication} from '../../../redux/actions/auth'
 import request from '../../../utils/request'
+import {doLogin} from "../utils";
 
 export function getSessionData(store) {
     request.get('/get-session-data',
@@ -12,7 +13,7 @@ export function getSessionData(store) {
             return response['data'];
         }).then((data) => {
             if (data['result'] === 'ok') {
-                store.dispatch(updateAuthentication(true));
+                doLogin(localStorage.getItem('accessToken'));
             }
         }).catch((err) => {
             console.log(err);

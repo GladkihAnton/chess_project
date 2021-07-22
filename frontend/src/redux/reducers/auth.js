@@ -19,7 +19,6 @@ export function auth(state=initialState, action) {
 
     switch(action.type) {
         case GET_SESSION_DATA_ACTION: {
-            // newState.isAuthenticate = false;
             return newState;
         }
 

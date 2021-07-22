@@ -5,6 +5,7 @@ import style from './lobby.module.css'
 import {Link} from "react-router-dom";
 import {chooseLobby} from "../../../../redux/actions/lobbies";
 import request from "../../../../utils/request";
+import {getPlayerId} from "../../../../redux/store";
 
 class Lobby extends Component {
 
@@ -39,7 +40,10 @@ class Lobby extends Component {
     }
 
     canEnter() {
-        return !this.blackPlayerId || !this.whitePlayerId;
+        const playerId = getPlayerId();
+        return (!this.blackPlayerId || !this.whitePlayerId)
+            && this.whitePlayerId !== playerId
+            && this.blackPlayerId !== playerId;
     }
 
     enterIntoLobby() {
