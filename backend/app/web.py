@@ -10,13 +10,14 @@ if TYPE_CHECKING:
 
 
 class BaseUrlMappingMatchInfo(UrlMappingMatchInfo):
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._apps: List[ChessApp] = []
         self._current_app: Optional[ChessApp] = None
 
     @property
-    def current_app(self) -> ChessApp:
+    def current_app(self) -> 'ChessApp':
         app = self._current_app
         assert app is not None
         return app
@@ -30,7 +31,7 @@ class BaseRequest(Request):
         self._match_info: Optional[BaseUrlMappingMatchInfo] = None
 
     @property
-    def app(self) -> ChessApp:
+    def app(self) -> 'ChessApp':
         """Application instance."""
         match_info = self._match_info
         assert match_info is not None

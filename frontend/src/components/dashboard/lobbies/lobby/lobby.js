@@ -26,6 +26,8 @@ class Lobby extends Component {
                 <div><p>Следующий ход: {this.nextMove}</p>
                     <p>Время у белый: {this.whiteRemainingTs}</p>
                     <p>Время у черных: {this.blackRemainingTs}</p>
+                    <p>Черный игрок: {this.blackPlayerId}</p>
+                    <p>Белый игрок: {this.whitePlayerId}</p>
                 </div>
                 <Link to={`${this.props.match.path}/${this.lobbyId}`}
                       onClick={this.props.chooseLobby.bind(this, this.lobbyId)}>
@@ -56,9 +58,9 @@ class Lobby extends Component {
                 this.showError(data['error']);
                 return;
             }
-            if (data['result'] === 'ok') {
-                this.props.toggleCreateLobbyModal(false);
-            }
+            // if (data['result'] === 'ok') {
+            //     this.props.toggleCreateLobbyModal(false);
+            // }
         });
     }
 

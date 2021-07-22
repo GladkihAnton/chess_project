@@ -11,7 +11,7 @@ class WebsocketLobbyHandler(BaseView):
         await ws.prepare(self.request)
 
         await ws.send_json({
-            'type': 'lobbies',
+            'event': 'lobbies',
             'lobby_id_to_lobby': {
                 lobby_id: lobby.to_dict() for lobby_id, lobby
                 in self.request.app.lobby_id_to_lobby.items()
@@ -33,8 +33,5 @@ class WebsocketLobbyHandler(BaseView):
                 print(msg)
 
         self.request.app.websocket_lobbies_subs.remove(ws)
-
-        # for _ws in self.request.app['websocket_lobbies_subs']:
-        #     await _ws.send_str('disconected')
 
         return Response(text='websocket close', status=200)

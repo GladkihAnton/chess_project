@@ -2,7 +2,8 @@ import {
     OPEN_CREATE_LOBBY_ACTION,
     CREATE_NEW_LOBBY_ACTION,
     GET_LOBBIES_ACTION,
-    CHOOSE_LOBBY_ACTION
+    CHOOSE_LOBBY_ACTION,
+    PLAYER_JOINED_ACTION
 } from "../actions/lobbies";
 
 const initialState = {
@@ -33,6 +34,11 @@ export function lobbies(state=initialState, action) {
 
         case CHOOSE_LOBBY_ACTION:
             newState.chosenLobby = action.lobbyId;
+            return newState;
+
+        case PLAYER_JOINED_ACTION:
+            newState.lobbyIdToLobby = {...newState.lobbyIdToLobby};
+            newState.lobbyIdToLobby[action.lobbyId][`${action.pieceColor}_player_id`] = action.playerId;
             return newState;
 
         default:

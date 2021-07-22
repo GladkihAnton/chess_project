@@ -5,14 +5,18 @@ from typing import TYPE_CHECKING, Optional, List
 
 from aiohttp.web import WebSocketResponse
 
+from app.model.player import Player
+
 if TYPE_CHECKING:
     from app.model.game import Game
+    from app.engine.lobby_engine import LobbyEngine
 
 
 class Lobby:
 
     def __init__(self, dto: LobbyDto):
         self._dto = dto
+        self.engine: Optional[LobbyEngine] = None
 
     @property
     def lobby_id(self):
@@ -71,6 +75,22 @@ class Lobby:
         self._dto.black_remaining_ts = black_remaining_ts
 
     @property
+    def white_player(self):
+        return self._dto.white_player
+
+    @white_player.setter
+    def white_player(self, white_player: Player):
+        self._dto.white_player = white_player
+
+    @property
+    def black_player(self):
+        return self._dto.black_player
+
+    @black_player.setter
+    def black_player(self, black_player: Player):
+        self._dto.black_player = black_player
+
+    @property
     def websocket_subscribers(self):
         return self._dto.websocket_subscribers
 
@@ -86,7 +106,9 @@ class Lobby:
             'lobby_name': self.lobby_name,
             'next_move': self.next_move,
             'white_remaining_ts': self.white_remaining_ts,
-            'black_remaining_ts': self.black_remaining_ts
+            'black_remaining_ts': self.black_remaining_ts,
+            'white_player_id': self.white_player.player_id if self.white_player else None,
+            'black_player_id': self.black_player.player_id if self.black_player else None
         }
 
 
@@ -98,8 +120,8 @@ class LobbyDto:
     black_remaining_ts: int
     next_move: str
 
-    white_player_id: str = None
-    black_player_id: str = None
+    white_player: Optional[Player] = None
+    black_player: Optional[Player] = None
     game: Optional[Game] = None
 
     websocket_subscribers: List[WebSocketResponse] = field(default_factory=list)

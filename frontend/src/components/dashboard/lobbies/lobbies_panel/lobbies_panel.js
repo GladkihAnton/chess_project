@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 import style from './lobbies_panel.module.css';
 import configFile from "../../../../config.json";
 import Modal from 'react-modal';
-import {toggleCreateLobbyModal, createNewLobby, getLobbies} from "../../../../redux/actions/lobbies";
+import {toggleCreateLobbyModal, createNewLobby, getLobbies, playerJoined} from "../../../../redux/actions/lobbies";
 import request from "../../../../utils/request";
 import Lobby from "../lobby/lobby";
 import {Route, Switch} from "react-router-dom";
@@ -90,12 +90,15 @@ class LobbiesPanel extends Component {
         };
         this.client.onmessage = (message) => {
             const data = JSON.parse(message.data);
-            switch(data.type) {
+            switch(data.event) {
                 case 'new_lobby':
                     this.props.createNewLobby(data.lobby_data, data.lobby_id);
                     break;
                 case 'lobbies':
                     this.props.getLobbies(data.lobby_id_to_lobby);
+                    break;
+                case 'player_joined':
+                    this.props.playerJoined(data.lobby_id, data.piece_color, data.player_id);
                     break;
                 default:
                     break;
@@ -118,7 +121,9 @@ class LobbiesPanel extends Component {
             }
 
             let lobby = lobbyIdToLobby[lobbyId];
-            commonLobbies.push(<Lobby key={lobby.lobby_id} lobbyId={lobby.lobby_id} lobbyName={lobby.lobby_name} nextMove={lobby.next_move}
+
+            commonLobbies.push(<Lobby key={lobby.lobby_id + lobby.white_player_id + lobby.black_player_id}
+                           lobbyId={lobby.lobby_id} lobbyName={lobby.lobby_name} nextMove={lobby.next_move}
                            whiteRemainingTs={lobby.white_remaining_ts} blackRemainingTs={lobby.black_remaining_ts}
                            whitePlayerId={lobby.white_player_id} blackPlayerId={lobby.black_player_id}
                            match={this.props.match}/>)
@@ -146,7 +151,7 @@ function  mapStateToProps(state, ownProps) {
     };
 }
 
-const actions = {toggleCreateLobbyModal, createNewLobby, getLobbies}
+const actions = {toggleCreateLobbyModal, createNewLobby, getLobbies, playerJoined}
 
 export default connect(
     mapStateToProps, actions
