@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from app.engine.game_engine import GameEngine
 
 
 class Game:
 
     DEFAULT_BOARD_POSITION = [
-        ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+        ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
         ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
         ['', '', '', '', '', '', '', ''],
         ['', '', '', '', '', '', '', ''],
@@ -19,6 +22,7 @@ class Game:
 
     def __init__(self, dto: GameDto):
         self._dto = dto
+        self.engine: Optional[GameEngine] = None
 
     @property
     def board(self):
@@ -28,6 +32,14 @@ class Game:
     def board(self, board: str):
         self._dto.board = board
 
+    @property
+    def step_number(self):
+        return self._dto.step_number
+
+    @step_number.setter
+    def step_number(self, step_number: str):
+        self._dto.step_number = step_number
+
     def to_dict(self):
         return {
             'board': self.board,
@@ -36,4 +48,5 @@ class Game:
 
 @dataclass
 class GameDto:
-    board: List[List[str]] = field(default_factory=Game.DEFAULT_BOARD_POSITION)
+    step_number: int = 1
+    board: List[List[str]] = field(default_factory=lambda: Game.DEFAULT_BOARD_POSITION)

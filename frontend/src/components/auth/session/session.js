@@ -1,6 +1,6 @@
 import {updateAuthentication} from '../../../redux/actions/auth'
 import request from '../../../utils/request'
-import {doLogin} from "../utils";
+import {doLogin, doLogout} from "../utils";
 
 export function getSessionData(store) {
     request.get('/get-session-data',
@@ -17,6 +17,6 @@ export function getSessionData(store) {
             }
         }).catch((err) => {
             console.log(err);
-            store.dispatch(updateAuthentication(false));
+            doLogout();
         })
 }

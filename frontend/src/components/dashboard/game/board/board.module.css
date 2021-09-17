@@ -4,4 +4,12 @@
     grid-template-columns: auto auto auto auto auto auto auto auto;
     grid-gap: 0;
     width: 32rem;
+    position: relative;
+    height: 32rem;
+}
+
+.spinner {
+    position: absolute;
+    top: 35%;
+    left: 35%;
 }

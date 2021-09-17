@@ -5,6 +5,7 @@ from typing import Dict, TYPE_CHECKING
 from aiohttp import WSMessage
 
 from app.model.lobby import Lobby, LobbyDto
+from app.engine.game_engine import GameEngine
 
 if TYPE_CHECKING:
     from app.chess_app import ChessApp
@@ -32,6 +33,7 @@ class LobbyEngine:
             black_player=player if data['piece_color'] == 'black' else None
         ))
         result.engine = LobbyEngine(result, chess_app)
+        GameEngine.create_new_game(result)
 
         chess_app.lobby_id_to_lobby[result.lobby_id] = result
 

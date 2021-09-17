@@ -5,7 +5,9 @@ import style from './board.module.css';
 import _ from "underscore";
 import {connect} from "react-redux";
 import configFile from "../../../../config.json";
-import {doMovePiece} from "../../../../redux/actions/game";
+import {doMovePiece, connectGame, disconnectGame} from "../../../../redux/actions/game";
+import {getPlayerId} from "../../../../redux/store";
+import {ClipLoader} from "react-spinners";
 
 class Board extends Component {
 
@@ -17,13 +19,17 @@ class Board extends Component {
     }
 
     prepareBoard() {
-        let boardItems = [];
+        const boardItems = [];
+        const lobby = this.props.lobbyIdToLobby[this.chosenLobby];
+
+        let canMove, cell;
         _.times(8, (y) => {
             _.times(8 , (x) => {
-                const canMove = this.props.moves[y][x] !== '';
-                boardItems.push(<Cell wsClient={this.wsClient} key={8*y + x + this.props.board[y][x] + this.props.stepNumber}
+                canMove = this.props.moves[y][x] !== '';
+                cell = <Cell wsClient={this.wsClient} key={8*y + x + this.props.board[y][x] + this.props.stepNumber}
                                       posX={x} posY={y} movePiece={this.movePiece.bind(this)} canMove={canMove}
-                                      piece={this.getFigure(x, y)}/>);
+                                      piece={this.getFigure(x, y)}/>;
+                lobby.black_player_id === getPlayerId() ? boardItems.unshift(cell) : boardItems.push(cell);
             });
         });
 
@@ -40,16 +46,19 @@ class Board extends Component {
         };
         this.wsClient.onmessage = (message) => {
             const data = JSON.parse(message.data);
-            switch(data.type) {
+            switch(data.event) {
                 case 'move_piece':
                     this.props.doMovePiece(data['to_x'], data['to_y'], data['from_x'], data['from_y'])
+                    break;
+                case 'board':
+                    this.props.connectGame(data['board'])
                     break;
                 default:
                     break;
             }
         };
         this.wsClient.onclose = (message) => {
-          console.log(message);
+          this.props.disconnectGame();
         };
         this.wsClient.onerror = (message) => {
           console.log(message);
@@ -62,13 +71,14 @@ class Board extends Component {
             'lobby_id': this.chosenLobby,
             'from': {'pos_x': this.props.chosenPiece.posX, 'pos_y': this.props.chosenPiece.posY},
             'to': {'pos_x': toPosX, 'pos_y': toPosY}
-        }))
+        }));
     }
 
     render() {
         return (
             <div className={style.board}>
                 {this.prepareBoard()}
+                <ClipLoader color='black' loading={this.props.loading} size={150} css='position: absolute; top: 35%; left: 35%;'/>
             </div>
         );
     }
@@ -80,12 +90,14 @@ function  mapStateToProps(state, ownProps) {
         moves: state.game.moves,
         chosenPiece: state.game.chosenPiece,
         chosenLobby: state.lobbies.chosenLobby,
-        stepNumber: state.game.stepNumber
+        lobbyIdToLobby: state.lobbies.lobbyIdToLobby,
+        stepNumber: state.game.stepNumber,
+        loading: state.game.loading
     };
 }
 
 const actions = {
-    doMovePiece
+    doMovePiece, connectGame, disconnectGame
 }
 
 export default connect(

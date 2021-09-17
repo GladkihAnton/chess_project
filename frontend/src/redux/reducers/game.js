@@ -1,17 +1,23 @@
-import {CHOOSE_PIECE_ACTION, MOVE_PIECE_ACTION} from "../actions/game";
+import {
+    CHOOSE_PIECE_ACTION,
+    CONNECT_GAME_ACTION,
+    DISCONNECT_GAME_ACTION,
+    MOVE_PIECE_ACTION,
+    SET_LOADING_ACTION
+} from "../actions/game";
 import request from "../../utils/request";
 
 
 const initialState = {
     board: [
-        ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
-        ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
         ['', '', '', '', '', '', '', ''],
         ['', '', '', '', '', '', '', ''],
         ['', '', '', '', '', '', '', ''],
-        ['', '', '', '', 'p', '', '', ''],
-        ['P', 'P', 'P', '', '', 'P', 'P', 'P'],
-        ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', '']
     ],
     moves: [
         ['', '', '', '', '', '', '', ''],
@@ -26,8 +32,7 @@ const initialState = {
     chosenPiece: null,
     stepNumber: 1,
     twoSqrMoveLine: null,
-    whitePlayerId: null,
-    blackPlayerId: null
+    loading: true
 };
 
 export function game(state=initialState, action) {
@@ -69,6 +74,19 @@ export function game(state=initialState, action) {
             newState.chosenPiece = null;
             newState.stepNumber += 1;
 
+            return newState;
+        }
+
+        case DISCONNECT_GAME_ACTION: {
+            newState.board = [...initialState.board];
+            newState.loading = true;
+            return newState;
+        }
+
+        case CONNECT_GAME_ACTION: {
+            console.log(CONNECT_GAME_ACTION);
+            newState.board = action.board;
+            newState.loading = false;
             return newState;
         }
 

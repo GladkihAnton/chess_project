@@ -13,6 +13,12 @@ class WebsocketGameHandler(BaseView):
         await ws.prepare(self.request)
 
         lobby_id = self.request.query.get('lobby_id')
+
+        await ws.send_json({
+            'event': 'board',
+            'board': self.request.app.lobby_id_to_lobby[lobby_id].game.board
+        })
+
         self.request.app.lobby_id_to_lobby[lobby_id].add_websocket_subscriber(ws)
 
         msg: WSMessage
@@ -23,9 +29,15 @@ class WebsocketGameHandler(BaseView):
                 else:
                     data = json.loads(msg.data)
                     if data['type'] == 'movePiece':
+                        self.request.app.lobby_id_to_lobby[data['lobby_id']].game.engine. \
+                            do_move(from_x=data['from']['pos_x'],
+                                    from_y=data['from']['pos_y'],
+                                    to_x=data['to']['pos_x'],
+                                    to_y=data['to']['pos_y'])
+
                         for _ws in self.request.app.lobby_id_to_lobby[data['lobby_id']].websocket_subscribers:
                             await _ws.send_json({
-                                'type': 'move_piece',
+                                'event': 'move_piece',
                                 'from_x': data['from']['pos_x'], 'from_y': data['from']['pos_y'],
                                 'to_x': data['to']['pos_x'], 'to_y': data['to']['pos_y'],
                             })

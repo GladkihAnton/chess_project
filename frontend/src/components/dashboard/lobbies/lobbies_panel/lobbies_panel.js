@@ -24,11 +24,16 @@ class LobbiesPanel extends Component {
 
     render() {
         return (
-            <div>
-                <button onClick={this.props.toggleCreateLobbyModal.bind(this, true)}>create new lobby</button>
-                <div className={style.panel}>
-                    {this.prepareLobbyList(this.props.lobbyIdToLobby)}
+            <div className={style.wrapper}>
+                <div>
+                    <button onClick={this.props.toggleCreateLobbyModal.bind(this, true)}>create new lobby</button>
+                    <div className={style.panel}>
+                        {this.prepareLobbyList(this.props.lobbyIdToLobby)}
+                    </div>
                 </div>
+                <Switch>
+                    <Route path={`${this.props.match.path}/:gameId`} component={() => <Board key={this.props.chosenLobby}/>}/>
+                </Switch>
                 <div>
                     <Modal
                         isOpen={this.props.isCreateLobbyModalOpen}
@@ -53,9 +58,6 @@ class LobbiesPanel extends Component {
                         </form>
                     </Modal>
                 </div>
-                <Switch>
-                    <Route path={`${this.props.match.path}/:gameId`} component={() => <Board key={this.props.chosenLobby}/>}/>
-                </Switch>
             </div>
         )
     }
